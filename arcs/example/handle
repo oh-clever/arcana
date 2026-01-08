@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+FROM=
+while [ $# -gt 0 ]; do
+	K="$1"
+	shift
+
+	V="$1"
+	shift
+
+	case "$K" in
+		from)
+			FROM="$( echo "$V" | base64 --decode )"
+			;;
+		something)
+			>&2 echo "\"$K\"=\"$( echo "$V" | base64 --decode )\""
+			;;
+		*)
+			>&2 echo "\"$K\"=\"$V\""
+			;;
+	esac
+done
+
+echo "$FROM"

@@ -1,0 +1,12 @@
+{% set startidx %}4{% /set %}\
+{% set endidx %}5{% /set %}\
+{% fordir d in "./testdir" as testloop %}\
+	{% if testloop.index >= startidx && testloop.index < endidx %}\
+		{% set validpaths %}{{ d }}{% /set %}\
+	{% /if %}\
+{% /fordir %}\
+
+{% foreach path in validpaths as pathsloop %}\
+	{% if pathsloop.isfirst %}{% else %}, {% /if %}\
+	{{ path }}\
+{% /foreach %}\

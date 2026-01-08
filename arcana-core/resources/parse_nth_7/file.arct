@@ -1,0 +1,13 @@
+{% set x %}First{% /set %}\
+{% set x %}Second{% /set %}\
+{% set x %}Third{% /set %}\
+{% set x %}Fourth{% /set %}\
+{% set x %}Fifth{% /set %}\
+
+{% foreach item in x as itemloop %}\
+	{% set y %}{{ item }}{% /set %}\
+{% /foreach %}\
+
+{% set n %}-1{% /set %}\
+
+{% nth x %}{{ n }}{% /nth %}\

@@ -1,0 +1,39 @@
+{#
+	available tags:
+		extend
+		fordir
+		forfile
+		foreach
+		if
+		setup
+#}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{% place page.title %}</title>
+
+		{% place page.style %}
+	</head>
+	<body>
+		<h1>{% place page.title %}</h1>
+		<hr>
+
+		<article>
+			{% place page.article %}
+		</article>
+
+		{% fordir dir in page.peopledir as dirloop %}
+			{% if !dirloop.first %}<hr>{% /if %}
+
+			{% forfile file in dir as fileloop %}
+				{% if !fileloop.first %}<hr>{% /if %}
+
+				{% compile file %}
+			{% /forfile %}
+		{% /fordir %}
+
+		{% foreach alias in page.aliases as aliasloop %}
+			{% if !dirloop.first %}<hr>{% /if %}
+		{% /foreach %}
+	</body>
+</html>

@@ -1,0 +1,2 @@
+{% set dirpath %}{% dirname "page.arct" in "./" /%}{% /set %}\
+{% basename dirpath /%}\

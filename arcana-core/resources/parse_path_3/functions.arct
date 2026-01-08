@@ -1,0 +1,4 @@
+{% fn file.name(filepath) %}\
+	{% set namepath %}{% path "name.txt" in filepath /%}{% /set %}\
+	{% include namepath /%}\
+{% /fn %}\

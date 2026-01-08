@@ -1,0 +1,7 @@
+{% set settingsdir %}{% path "./settings" /%}{% /set %}\
+{% fordir settingd in settingsdir as loop %}{% if loop.isfirst %}{% else %}
+{% /if %}\
+{% set keypath %}{{ settingd }}/key.txt{% /set %}\
+{% set valuepath %}{{ settingd }}/value.txt{% /set %}\
+{% include keypath /%}: {% include valuepath /%}\
+{% /fordir %}\

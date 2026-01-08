@@ -1,0 +1,7 @@
+{% forsplit number in "0,1,2,3,4,5" on "," as numberloop reversed %}\
+	{% set numbers %}{{ number }}{% /set %}\
+{% /forsplit %}\
+{% foreach number in numbers as numberloop %}\
+	{% if numberloop.isfirst %}{% else %}+{% /if %}\
+	{{ number }}\
+{% /foreach %}\

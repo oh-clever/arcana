@@ -1,0 +1,3 @@
+{% set template %}{% path "item-template.arct" /%}{% /set %}\
+{% extend template /%}\
+{% set item.dir %}{% path "./item" /%}{% /set %}\

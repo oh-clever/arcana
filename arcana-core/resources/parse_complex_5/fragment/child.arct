@@ -1,0 +1,8 @@
+{% assert child /%}\
+<div class="child">
+	{% if forchild %}\
+		{% set lrleft %}Child{% /set %}\
+		{% set lrright %}<strong>{{ child }}</strong>{% /set %}\
+		{% compile "./lr.arct" /%}
+	{% /if %}\
+</div>

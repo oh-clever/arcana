@@ -1,0 +1,3 @@
+{% forsplit c in "12" on "" as loop %}\
+	{% if loop.islast && !loop.isfirst %}Y{% /if %}\
+{% /forsplit %}\

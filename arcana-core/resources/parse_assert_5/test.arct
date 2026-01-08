@@ -1,0 +1,3 @@
+{% set yes %}This should be truthy as it is not empty{% /set %}\
+{% assert ("0" || ("1" &&  yes)) /%}\
+Passed\

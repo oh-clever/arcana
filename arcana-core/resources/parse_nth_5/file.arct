@@ -1,0 +1,9 @@
+{% set x %}First{% /set %}\
+{% set x %}Second{% /set %}\
+{% set x %}Third{% /set %}\
+{% set x %}Fourth{% /set %}\
+{% set x %}Fifth{% /set %}\
+{% set n %}-0{% /set %}\
+{% nth x %}
+	{{ n }}
+{% /nth %}\

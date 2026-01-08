@@ -1,0 +1,3 @@
+{# ./siblings/second.arct #}\
+{% set sibling.name %}Fred{% /set %}\
+{% set sibling.description %}The poor middle-child{% /set %}\

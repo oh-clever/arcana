@@ -1,0 +1,13 @@
+{#
+	A single-row two-celled table with the first cell left aligned and the
+	second right-aligned.
+#}\
+{% assert lrleft || lrright /%}\
+<table class="lr"{% if maxwidth %} style="max-width:{{ maxwidth }};margin-left:auto;margin-right:auto;"{% /if %}>
+	<tbody>
+		<tr>
+			<td>{{ lrleft }}</td>
+			<td>{{ lrright }}</td>
+		</tr>
+	</tbody>
+</table>\

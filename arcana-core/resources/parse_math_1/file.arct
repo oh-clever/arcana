@@ -1,0 +1,7 @@
+{% set x %}3{% /set %}\
+{% set x %}{% pow x %}3{% /pow %}{% /set %}{# 27 #}\
+{% set x %}{% div x %}3{% /div %}{% /set %}{# 9 #}\
+{% set x %}{% add x %}1{% /add %}{% /set %}{# 10 #}\
+{% set x %}{% mul x %}10{% /mul %}{% /set %}{# 100 #}\
+{% set x %}{% sub x %}1{% /sub %}{% /set %}\
+{{ x }}\

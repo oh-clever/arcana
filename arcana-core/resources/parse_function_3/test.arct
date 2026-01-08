@@ -1,0 +1,2 @@
+{% call "./fn.arct" /%}\
+{{ rel("test.txt") }}\

@@ -1,0 +1,4 @@
+{% forfile file in "./files" as filesloop reversed %}\
+	{{ file }}\
+	{% if filesloop.islast %}{% else %}, {% /if %}\
+{% /forfile %}\

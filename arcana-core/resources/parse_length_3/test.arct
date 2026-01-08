@@ -1,0 +1,3 @@
+{% set x %}First{% /set %}\
+{% set x %}Second{% /set %}\
+{% length x /%}\

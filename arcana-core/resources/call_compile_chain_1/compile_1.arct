@@ -1,0 +1,2 @@
+{% assert i /%}\
+{% call "../call_compile_chain_1/call_1.arct" /%}\

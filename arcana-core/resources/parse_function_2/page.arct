@@ -1,0 +1,7 @@
+{% fn test(one, two, three) %}\
+	{{one}}, {{two}}{% if three %}, {{three}}{% /if %}\
+{% /fn %}\
+{% set first %}One{% /set %}\
+{% set second %}Two{% /set %}\
+{{ test(first, second, "Third") }}
+{{ test ("Fourth", "Fifth") }}

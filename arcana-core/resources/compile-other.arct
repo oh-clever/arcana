@@ -1,0 +1,6 @@
+{% set paragraphs %}This is some text here.
+And some more text.{% /set %}\
+{% set paragraphs %}Here is another paragraph. Blah.{% /set %}\
+Below are the paragraphs.
+{% foreach paragraph in paragraphs as ploop %}{% if ploop.isfirst %}{% else %}
+{% /if %}{{ paragraph }}{% /foreach %}\

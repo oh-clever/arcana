@@ -1,0 +1,10 @@
+{% extend "./template.arct" /%}\
+{% set peopledir %}{% path "./people" /%}{% /set %}\
+{% fordir persondir in peopledir as loop %}\
+{% if loop.isfirst %}{% else %}
+{% /if %}\
+{% set namepath %}{{ persondir }}/name.txt{% /set %}\
+{% set agepath %}{{ persondir }}/age.txt{% /set %}\
+{% include namepath /%} is {% include agepath /%} year(s) old.\
+{% else %}\
+{% /fordir %}\

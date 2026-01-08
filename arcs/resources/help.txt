@@ -1,0 +1,70 @@
+arcs: a simple command-line configurable http server for serving Arcana
+      templates and handling form submissions
+
+USAGE:
+  arcs (-h|--help)
+  arcs [(-i|--ip) <IP>] [(-p|--port) <PORT>] [(-n|--name) <NAME>] \
+    [(-s|--set) <CFG>...] [(-g|--get) <CFG>...] [(-u|--urlencoded) <CFG>...] \
+    [(-m|--multipart) <CFG>...]
+
+ARGUMENTS:
+  -g  --get                <CFG>   Enable a template to be served on a given
+                                   route via the GET http-method. See GET for
+                                   details.
+  -h  --help                       Display this message.
+  -i  --ip                 <IP>    Listen on the ip address <IP>.
+  -m  --multipart          <CFG>   Enable a handler to be served on a given
+                                   route via the POST http-method expecting an
+                                   enctype of multipart/form-data. See MULTIPART
+                                   for details
+  -n  --name               <NAME>  Use a tempdir prefixed by <NAME> when storing
+                                   form data.
+  -p  --port               <PORT>  Listen on the port <PORT>.
+  -s  --set                <CFG>   Store a variable in context. See VARIABLE for
+                                   details.
+  -u  --urlencoded         <CFG>   Enable a handler to be served on a given
+                                   route via the POST http-method expecting an
+                                   enctype of application/x-www-form-urlencoded.
+                                   See URLENCODED for details.
+  -z  --max-multipart-size <MAXB>  Set the maximum request size of multipart
+                                   submissions to <MAXB> bytes. Defaults to
+                                   1MB.
+
+GET:
+  Expects a value in "<DELIMITER><URL-PATH><DELIMITER><PATH-TO-TEMPLATE>"
+  format. The first DELIMITER is a single character which defines where the
+  parsing of URL-PATH will stop and the parsing of PATH-TO-TEMPLATE will begin.
+  URL-PATH is the route from the hostname at which to serve the template.
+  PATH-TO-TEMPLATE is the relative or absolute file path at which to find the
+  Arcana template that will be parsed. Any url parameters included in each
+  request will be provided to the template with the prefix "params.".
+
+MULTIPART:
+  Expects a value in "<DELIMITER><URL-PATH><DELIMITER><COMMAND>" format. The
+  first DELIMITER is a single character which defines where the parsing of
+  URL-PATH will stop and the parsing of COMMAND will begin. URL-PATH is the
+  route from the hostname at which to serve the handler. COMMAND is the command
+  to execute when the handler is hit. COMMAND will be passed a single argument
+  which represents the path to the tempdir which hold the saved form data. The
+  form data is in the form of directories where each directory name is the form
+  field name and the files within represent each instance of that form field
+  name where the contents are the value of the form field submitted. The file
+  names are in BASE26 represented by the english alphabet.
+
+VARIABLE:
+  Expects a value in "<DELIMITER><KEY><DELIMITER><VALUE>" format. The first
+  DELIMITER is a single character which defines where the parsing of KEY will
+  stop and the parsing of VALUE will begin. KEY is the variable's name. VALUE is
+  the value.
+
+URLENCODED:
+  Expects a value in "<DELIMITER><URL-PATH><DELIMITER><COMMAND>" format. The
+  first DELIMITER is a single character which defines where the parsing of
+  URL-PATH will stop and the parsing of COMMAND will begin. URL-PATH is the
+  route from the hostname at which to serve the handler. COMMAND is the command
+  to execute when the handler is hit. COMMAND will be passed a single argument
+  which represents the path to the tempdir which hold the saved form data. The
+  form data is in the form of directories where each directory name is the form
+  field name and the files within represent each instance of that form field
+  name where the contents are the value of the form field submitted. The file
+  names are in BASE26 represented by the english alphabet.

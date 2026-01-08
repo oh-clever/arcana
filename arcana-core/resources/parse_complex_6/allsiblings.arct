@@ -1,0 +1,17 @@
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>\
+        {% set sibsdir %}{% path "./siblings" /%}{% /set %}\
+        {% set sibtemplate %}{% path "./sibling.arct" /%}{% /set %}\
+        {% forfile sibling.filepath in sibsdir as sibling.loop %}
+        {% compile sibtemplate /%}\
+        {% else %}\
+            {# no files in "./a-dir" #}\
+        {% /forfile %}
+    </tbody>
+</table>

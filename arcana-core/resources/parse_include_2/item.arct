@@ -1,0 +1,2 @@
+{% extend "./base.arct" /%}\
+{% set itemdir %}./item{% /set %}\

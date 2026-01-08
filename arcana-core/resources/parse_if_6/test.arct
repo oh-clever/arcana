@@ -1,0 +1,9 @@
+{% set names %}Mark{% /set %}\
+{% set names %}Fred{% /set %}\
+{% set names %}Karissa{% /set %}\
+{% foreach name in names as loop %}\
+	{% if !loop.isfirst && loop.size > "2" %}, {% /if %}\
+	{% if loop.islast && !loop.isfirst %}and {% /if %}\
+	{{ name }}\
+	{% if loop.islast %}.{% /if %}\
+{% /foreach %}\

@@ -1,0 +1,3 @@
+{% set namepath %}{% path "name.txt" in itemdir /%}{% /set %}\
+{% set name %}{% include namepath /%}{% /set %}\
+The name of the item is "{{ name }}."\

@@ -1,0 +1,2 @@
+{% assert tosplit /%}\
+{% set text %}<span>{{ tosplit }}</span>{% /set %}\

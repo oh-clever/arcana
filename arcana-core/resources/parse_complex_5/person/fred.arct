@@ -1,0 +1,2 @@
+{% extend "./person.arct" /%}\
+{% set person_name %}Fred{% /set %}\

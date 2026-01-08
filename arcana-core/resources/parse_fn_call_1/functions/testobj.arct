@@ -1,0 +1,9 @@
+{# path must be set outside of the uncalled fn block #}\
+
+{% set test.functions.pagesizepath %}\
+	{% path "../settings/testobj/pagesize.arct" /%}\
+{% /set %}\
+
+{% fn test.pagesize() %}\
+	{% compile test.functions.pagesizepath /%}\
+{% /fn %}\

@@ -1,0 +1,3 @@
+[workspace]
+members = [ "arcana-core", "arcc", "arcs" ]
+resolver = "2"

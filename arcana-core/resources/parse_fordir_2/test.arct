@@ -1,0 +1,1 @@
+{% fordir item in "./items" from "0" to "2" as loop reversed %}{% if !loop.isfirst %}, {% /if %}{{ item }}{% /fordir %}\

@@ -1,0 +1,4 @@
+{% set lcb %}{% include "./lcbracket" /%}{% /set %}\
+{% set rcb %}{% include "./rcbracket" /%}{% /set %}\
+{% set title %}Title{% /set %}\
+{{lcb}}{{title}}{{rcb}}\

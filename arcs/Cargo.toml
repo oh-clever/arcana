@@ -1,0 +1,22 @@
+[package]
+name = "arcs"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies.axum]
+version = "0.8.4"
+features = ["form", "macros", "multipart"]
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+
+[dependencies.tempfile]
+version = "3"
+
+[dependencies.arcana-core]
+path = "../arcana-core"
+
+[dependencies.tokio]
+version = "1.0"
+features = ["full"]

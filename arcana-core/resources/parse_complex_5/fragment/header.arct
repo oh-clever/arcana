@@ -1,0 +1,7 @@
+{% assert headertext /%}\
+{% set tosplit %}{{ headertext }}{% /set %}\
+{% call "../function/split.arct" /%}\
+{% if headertag %}{% else %}{% set headertag %}h1{% /set %}{% /if %}\
+<{{headertag}} class="lead split"{% if headerid %} id="{{ headerid }}"{% /if %}>\
+	{{ text }}\
+</{{headertag}}>

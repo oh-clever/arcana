@@ -1,0 +1,1 @@
+<h1>{% foreach h in header %}<span>{{ h }}</span>{% /foreach %}</h1>\

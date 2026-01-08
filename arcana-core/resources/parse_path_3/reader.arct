@@ -1,0 +1,2 @@
+{% call "./functions.arct" /%}\
+{% set file.name %}{{ file.name(file.path) }}{% /set %}\

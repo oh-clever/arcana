@@ -1,0 +1,4 @@
+{% set file.path %}something.else.txt{% /set %}\
+{% set file.path %}{% path "./file" /%}{% /set %}\
+{% call "./reader/file.arct" /%}\
+{{ file.name }}\

@@ -1,0 +1,15 @@
+arcc: Compile Arcana templates.
+
+USAGE:
+    arcc (-h|--help)
+    arcc (-v|--version)
+    arcc [(-s|--set) <DKV>] (<PATH>|-)
+
+ARGUMENTS:
+    -h|--help            Display this help message.
+    -s|--set      <DKV>  Sets a value in context.
+    -v|--version         Display version.
+    <DKV>                A single character delimiter and a key/value pair. I.e
+                         ':key:value' or '=key=value'.
+    <PATH>               Compile the Arcana file at <PATH>.
+    -                    Read from stdin.

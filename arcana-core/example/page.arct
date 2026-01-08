@@ -1,0 +1,15 @@
+{% extend "./template.arct" %}
+{% setup page.title %}Test Page{% /setup %}
+{% setup page.style %}
+	<link rel="stylesheet" type="text/css" href="./style.css">
+{% /setup %}
+{% setup page.article %}
+	<h2>{% place page.title %}</h2>
+	<hr>
+
+	<p>This is the article.</p>
+{% /setup %}
+{% setup page.peopledir %}./people{% /setup %}
+{% setup page.aliases %}First{% /setup %}
+{% setup page.aliases %}Second{% /setup %}
+{% setup page.aliases %}Third{% /setup %}

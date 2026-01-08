@@ -1,0 +1,4 @@
+{% fordir dir in "./" as dirsloop reversed %}\
+	{{ dir }}\
+	{% if dirsloop.islast %}{% else %}, {% /if %}\
+{% /fordir %}\

@@ -1,0 +1,3 @@
+{% set file.path %}{% path "./" /%}{% /set %}\
+{% call "./reader.arct" /%}\
+{{ file.name }}\

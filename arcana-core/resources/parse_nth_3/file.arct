@@ -1,0 +1,4 @@
+{% set x %}First{% /set %}\
+{% set x %}Second{% /set %}\
+{% set x %}Third{% /set %}\
+{% nth x %}NaN{% /nth %}\

@@ -1,0 +1,4 @@
+[submodule "fuss-core/crates/cfg-rs"]
+	path = tenplates-core/crates/cfg-rs
+	url = https://github.com/frankiebaffa/cfg-rs
+	branch = master

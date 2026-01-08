@@ -1,0 +1,5 @@
+{%extend "./template.txt"/%}\
+{% set firstuser %}test.user{% /set %}\
+{% set seconduser %}second.user{% /set %}\
+User(1): {{firstuser}}, \
+User(2): {{seconduser}}\

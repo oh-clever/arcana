@@ -1,0 +1,4 @@
+{% set relative %}..{% /set %}\
+{% fn rel(path) %}\
+	{{ relative }}/{{ path }}\
+{% /fn %}\

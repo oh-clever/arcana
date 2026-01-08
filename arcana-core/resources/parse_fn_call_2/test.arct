@@ -1,0 +1,5 @@
+{% fn h(lvl, id, text) %}\
+	<h{{ lvl }} id="{{ id }}">{{ text }}</h{{ lvl }}>\
+{% /fn %}\
+
+{{ h("4", "the_id", "Some text") }}\

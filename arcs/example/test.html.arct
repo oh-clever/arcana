@@ -1,0 +1,4 @@
+<form method="POST" action="/test" id="the_form" enctype="multipart/form-data"></form>\
+<input form="the_form" type="text" placeholder="value" name="something">\
+<input form="the_form" type="file" placeholder="a file" name="da_file">\
+<input form="the_form" type="hidden" name="from" value="/complete?message=success">\

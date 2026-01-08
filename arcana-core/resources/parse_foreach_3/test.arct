@@ -1,0 +1,11 @@
+{% set x %}0{% /set %}\
+{% set x %}1{% /set %}\
+{% set x %}2{% /set %}\
+{% set x %}3{% /set %}\
+{% set x %}4{% /set %}\
+{% set x %}5{% /set %}\
+{% set x %}6{% /set %}\
+{% foreach i in x to "4" as loop reversed %}\
+	{% if loop.isfirst %}{% else %}, {% /if %}\
+	{{ i }}\
+{% /foreach %}\

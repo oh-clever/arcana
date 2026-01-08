@@ -1,0 +1,28 @@
+{% set resources %}\
+	{% path "./resources" /%}\
+{% /set %}\
+
+{% forfile file in resources %}\
+	{% set files %}\
+		{% path file /%}\
+	{% /set %}\
+{% /forfile %}\
+
+{% foreach file in files as fileloop %}\
+	{% set fpath %}\
+		{% nth files %}\
+			{{ fileloop.index }}\
+		{% /nth %}\
+	{% /set %}\
+	{% set contents %}\
+		{% include fpath /%}\
+	{% /set %}\
+{% /foreach %}\
+
+{% set n %}\
+	-1\
+{% /set %}\
+
+{% nth contents %}\
+	{{ n }}\
+{% /nth %}\

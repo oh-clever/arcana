@@ -1,0 +1,9 @@
+{% set numbers %}0{% /set %}\
+{% set numbers %}1{% /set %}\
+{% set numbers %}2{% /set %}\
+{% set numbers %}3{% /set %}\
+{% set numbers %}4{% /set %}\
+{% foreach number in numbers as numbersloop reversed %}\
+	{{ number }}\
+	{% if numbersloop.islast %}{% else %}, {% /if %}\
+{% /foreach %}\

@@ -1,0 +1,2 @@
+{% set fg %}{% include "./theme/fg.txt" /%}{% /set %}\
+{{ fg }}\

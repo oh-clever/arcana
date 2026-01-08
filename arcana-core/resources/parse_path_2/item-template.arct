@@ -1,0 +1,7 @@
+{% set namepath %}{{ item.dir }}/name.txt{% /set %}\
+{% set item.name %}{% include namepath /%}{% /set %}\
+
+{% set agepath %}{{ item.dir }}/age.txt{% /set %}\
+{% set item.age %}{% include agepath /%}{% /set %}\
+
+{{ item.name }} is {{ item.age }} year(s) old.\

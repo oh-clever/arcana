@@ -1,0 +1,2 @@
+{% set namepath %}{% path "name.txt" /%}{% /set %}\
+{% include namepath /%}\

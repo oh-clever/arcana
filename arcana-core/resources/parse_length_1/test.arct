@@ -1,0 +1,2 @@
+{% set x %}This is a value!{% /set %}\
+{% length x /%}\

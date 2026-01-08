@@ -1,0 +1,5 @@
+{% forsplit i in "" on "" %}\
+	{{ i }}\
+{% else %}\
+	No items.\
+{% /forsplit %}\

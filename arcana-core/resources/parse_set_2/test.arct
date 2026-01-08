@@ -1,0 +1,2 @@
+{%set x%}Hello, World!{%/set%}\
+{{x}}\
