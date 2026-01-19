@@ -19,18 +19,18 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
 name = "arcana-core"
-version = "1.0.0"
+version = "1.0.1"
 
 [[package]]
 name = "arcc"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "arcana-core",
 ]
 
 [[package]]
 name = "arcs"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "arcana-core",
  "axum",

@@ -3,9 +3,9 @@ arcs: a simple command-line configurable http server for serving Arcana
 
 USAGE:
   arcs (-h|--help)
-  arcs [(-i|--ip) <IP>] [(-p|--port) <PORT>] [(-n|--name) <NAME>] \
-    [(-s|--set) <CFG>...] [(-g|--get) <CFG>...] [(-u|--urlencoded) <CFG>...] \
-    [(-m|--multipart) <CFG>...]
+  arcs [(((-i|--ip) <IP> (-p|--port) <PORT>)|(-U|--unix-socket-file <FILE>))] \
+    [(-n|--name) <NAME>] [(-s|--set) <CFG>...] [(-g|--get) <CFG>...] \
+    [(-u|--urlencoded) <CFG>...] [(-m|--multipart) <CFG>...]
 
 ARGUMENTS:
   -g  --get                <CFG>   Enable a template to be served on a given
@@ -26,6 +26,10 @@ ARGUMENTS:
                                    route via the POST http-method expecting an
                                    enctype of application/x-www-form-urlencoded.
                                    See URLENCODED for details.
+  -U  --unix-socket-file   <FILE>  A unix socket file on which to listen instead of
+                                   an ip address and port number.
+  -w  --workers            <NUM>   The number of workers to allow. Set to 0 for
+                                   single-threaded. Defaults to 0.
   -z  --max-multipart-size <MAXB>  Set the maximum request size of multipart
                                    submissions to <MAXB> bytes. Defaults to
                                    1MB.

@@ -20,6 +20,10 @@ use {
     tokio::net::TcpListener,
 };
 
+
+#[cfg(target_os= "linux")]
+use tokio::net::UnixListener;
+
 const HELP: &str = include_str!("../resources/help.txt");
 
 fn string_from_dkv(dkv: String) -> (String, String) {
@@ -89,18 +93,22 @@ fn base26(mut dec: usize) -> String {
 static VARS: OnceLock<Vec<(String, String)>> = OnceLock::new();
 static NAME: OnceLock<String> = OnceLock::new();
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let mut long_args = args();
     long_args.next(); // burn prog name
 
     let mut ip = String::from("localhost");
     let mut port = String::from("8080");
+
+    #[cfg(target_os = "linux")]
+    let mut unix_socket = None;
+
     let mut max_multipart_size = 1000000_usize;
     let mut gets = Vec::new();
     let mut urlencodeds = Vec::new();
     let mut multiparts = Vec::new();
     let mut variables = Vec::new();
+    let mut workers = 0_usize;
 
     while let Some(long_arg) = long_args.next() {
         if let Some(long_arg) = long_arg.strip_prefix("--") {
@@ -118,7 +126,10 @@ async fn main() {
                 },
                 "port" => port = long_args.next().unwrap(),
                 "set" => variables.push(string_from_dkv(long_args.next().unwrap())),
+                #[cfg(target_os= "linux")]
+                "unix-socket-file" => unix_socket = Some(long_args.next().unwrap()),
                 "urlencoded" => urlencodeds.push(from_dkv(long_args.next().unwrap())),
+                "workers" => workers = long_args.next().unwrap().parse::<usize>().unwrap(),
                 unknown => panic!("Unknown argument --{unknown}"),
             }
         }
@@ -158,6 +169,15 @@ async fn main() {
                     'u' => {
                         assert!(short_args.next().is_none());
                         urlencodeds.push(from_dkv(long_args.next().unwrap()));
+                    },
+                    #[cfg(target_os= "linux")]
+                    'U' => {
+                        assert!(short_args.next().is_none());
+                        unix_socket = Some(long_args.next().unwrap());
+                    },
+                    'w' => {
+                        assert!(short_args.next().is_none());
+                        workers = long_args.next().unwrap().parse::<usize>().unwrap();
                     },
                     'z' => {
                         assert!(short_args.next().is_none());
@@ -323,9 +343,60 @@ async fn main() {
             .layer(DefaultBodyLimit::max(max_multipart_size));
     }
 
-    let listener = TcpListener::bind(&format!("{ip}:{port}"))
-        .await
-        .unwrap();
+    #[cfg(target_os = "linux")]
+    if let Some(unix_socket) = unix_socket {
+        if workers > 0 {
+            tokio::runtime::Builder::new_multi_thread()
+                .worker_threads(workers)
+                .enable_all()
+                .build()
+                .unwrap()
+                .block_on(async {
+                    let listener = UnixListener::bind(&unix_socket).unwrap();
+                    serve(listener, app).await.unwrap();
+                });
+        }
+        else {
+            tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .start_paused(true)
+                .build()
+                .unwrap()
+                .block_on(async {
+                    let listener = UnixListener::bind(&unix_socket).unwrap();
+                    serve(listener, app).await.unwrap();
+                });
+        }
 
-    serve(listener, app).await.unwrap();
+        return;
+    }
+
+    if workers > 0 {
+        tokio::runtime::Builder::new_multi_thread()
+            .worker_threads(workers)
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(async {
+                let listener = TcpListener::bind(&format!("{ip}:{port}"))
+                    .await
+                    .unwrap();
+
+                serve(listener, app).await.unwrap();
+            });
+    }
+    else {
+        tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .start_paused(true)
+            .build()
+            .unwrap()
+            .block_on(async {
+                let listener = TcpListener::bind(&format!("{ip}:{port}"))
+                    .await
+                    .unwrap();
+
+                serve(listener, app).await.unwrap();
+            });
+    }
 }
