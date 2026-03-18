@@ -2317,6 +2317,9 @@ where
             let path = self.parse_value_as_path("include")?
                 .into_internal("The included path was None and this message needs improvement")
                 .into_step()?;
+
+            self.bypass_whitespace()?;
+
             let file = OpenOptions::new()
                 .read(true)
                 .write(false)
@@ -2743,6 +2746,8 @@ where
             };
 
             reldir.push(path);
+
+            self.bypass_whitespace()?;
 
             let dir = canonicalize(&reldir)
                 .into_internal(format!("Failed to canonicalize relative path {reldir:?}"))

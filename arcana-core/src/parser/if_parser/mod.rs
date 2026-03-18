@@ -374,6 +374,64 @@ where
                                 },
                             }
                         },
+                        'd' => {
+                            self.input_mut().into_step()?.step().into_step()?;
+
+                            self.tag_expect_char("if", |c| matches!(c, 'i'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'r'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'e'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'c'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 't'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'o'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'r'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'y'))?;
+
+                            let c = self.tag_current_or_unexpected_eof("if")?;
+                            if !c.is_whitespace() && !matches!(c, '|'|'&'|'%') {
+                                return self.tag_unexpected_char("if");
+                            }
+
+                            self.condition = Some(match self.bypass.as_ref() {
+                                Some(b) => Condition::from(*b),
+                                None => Condition::from(self.input().into_step()?.join_path(left_value.unwrap_or_else(String::new)).is_dir()),
+                            });
+                        },
+                        'e' => {
+                            self.input_mut().into_step()?.step().into_step()?;
+
+                            self.tag_expect_char("if", |c| matches!(c, 'x'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'i'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 's'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 't'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 's'))?;
+
+                            let c = self.tag_current_or_unexpected_eof("if")?;
+                            if !c.is_whitespace() && !matches!(c, '|'|'&'|'%') {
+                                return self.tag_unexpected_char("if");
+                            }
+
+                            self.condition = Some(match self.bypass.as_ref() {
+                                Some(b) => Condition::from(*b),
+                                None => Condition::from(self.input().into_step()?.join_path(left_value.unwrap_or_else(String::new)).exists()),
+                            });
+                        },
+                        'f' => {
+                            self.input_mut().into_step()?.step().into_step()?;
+
+                            self.tag_expect_char("if", |c| matches!(c, 'i'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'l'))?;
+                            self.tag_expect_char("if", |c| matches!(c, 'e'))?;
+
+                            let c = self.tag_current_or_unexpected_eof("if")?;
+                            if !c.is_whitespace() && !matches!(c, '|'|'&'|'%') {
+                                return self.tag_unexpected_char("if");
+                            }
+
+                            self.condition = Some(match self.bypass.as_ref() {
+                                Some(b) => Condition::from(*b),
+                                None => Condition::from(self.input().into_step()?.join_path(left_value.unwrap_or_else(String::new)).is_file()),
+                            });
+                        },
                         // truthy
                         _ => {
                             self.condition = Some(match self.bypass.as_ref() {

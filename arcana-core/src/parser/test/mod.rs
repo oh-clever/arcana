@@ -205,6 +205,48 @@ fn parse_include_2() {
 }
 
 #[test]
+fn parse_include_or_else() {
+    let mut output = Vec::<u8>::new();
+    let mut parser = TemplateParser::new(
+        Context::default(),
+        PathBuf::from("./resources/parse_include_or_else/test.arct"),
+        &mut output,
+    ).unwrap();
+    parser.parse().unwrap();
+    drop(parser);
+    let output_str = String::from_utf8(output).unwrap();
+
+    assert_eq!("0", output_str);
+}
+
+#[test]
+fn parse_include_or_else_pass() {
+    let mut output = Vec::<u8>::new();
+    let mut parser = TemplateParser::new(
+        Context::default(),
+        PathBuf::from("./resources/parse_include_or_else/test-pass.arct"),
+        &mut output,
+    ).unwrap();
+    parser.parse().unwrap();
+    drop(parser);
+    let output_str = String::from_utf8(output).unwrap();
+
+    assert_eq!("Yes", output_str);
+}
+
+#[test]
+#[should_panic]
+fn parse_include_or_else_panic() {
+    let mut output = Vec::<u8>::new();
+    let mut parser = TemplateParser::new(
+        Context::default(),
+        PathBuf::from("./resources/parse_include_or_else/test-panic.arct"),
+        &mut output,
+    ).unwrap();
+    parser.parse().unwrap();
+}
+
+#[test]
 fn parse_comment_1() {
     let input = "Here is some text{# and a comment #} and some more text.";
     let mut output = Vec::<u8>::new();
@@ -495,6 +537,90 @@ fn parse_if_mixed_1() {
     drop(parser);
     let output_str = String::from_utf8(output).unwrap();
     assert_eq!("True", output_str);
+}
+
+#[test]
+fn parse_if_file_1() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_file_1/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("0", output_str);
+}
+
+#[test]
+fn parse_if_file_2() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_file_2/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("1", output_str);
+}
+
+#[test]
+fn parse_if_directory_1() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_directory_1/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("0", output_str);
+}
+
+#[test]
+fn parse_if_directory_2() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_directory_2/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("1", output_str);
+}
+
+#[test]
+fn parse_if_exists_1() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_exists_1/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("0", output_str);
+}
+
+#[test]
+fn parse_if_exists_2() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_if_exists_2/test.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!("1", output_str);
 }
 
 #[test]
@@ -924,6 +1050,33 @@ fn parse_path_5() {
     let output_str = String::from_utf8(output).unwrap();
 
     assert_eq!("File", output_str);
+}
+
+#[test]
+fn parse_path_else_1() {
+    let mut output = Vec::<u8>::new();
+    let mut parser = TemplateParser::new(
+        Context::default(),
+        PathBuf::from("./resources/parse_path_else_1/test.arct"),
+        &mut output,
+    ).unwrap();
+    parser.parse().unwrap();
+    drop(parser);
+    let output_str = String::from_utf8(output).unwrap();
+
+    assert_eq!("", output_str);
+}
+
+#[test]
+#[should_panic]
+fn parse_path_else_1_panic() {
+    let mut output = Vec::<u8>::new();
+    let mut parser = TemplateParser::new(
+        Context::default(),
+        PathBuf::from("./resources/parse_path_else_1/test-panic.arct"),
+        &mut output,
+    ).unwrap();
+    parser.parse().unwrap();
 }
 
 #[test]

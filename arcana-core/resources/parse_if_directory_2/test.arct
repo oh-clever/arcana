@@ -1,0 +1,1 @@
+{% if "./dir" directory %}1{% else %}0{% /if %}\

@@ -1,0 +1,5 @@
+{% if "./not-a-file.txt" file %}\
+	{% include "./not-a-file.txt" /%}\
+{% else %}\
+	0\
+{% /if %}\

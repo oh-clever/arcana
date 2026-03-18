@@ -536,7 +536,7 @@ True
 ### <a id="t-include"></a>Include
 
 Includes a file inline with no compilation. Useful for including files which
-contain `Ten Plates` syntax.
+contain `Arcana` syntax. This will panic when the file does not exist.
 
 ```arcana
 {# ./includes/file.arct #}\
@@ -731,7 +731,7 @@ A set of one or more of logical assertions evaluating to true or false. These
 can be nested using parenthetical notation or conjoined using the
 short-circuiting _and_ or _or_ operators and negated using the _not_ operator.
 The values contained within conditions are evaluated in their _string_ form so
-`Ten Plates` performs boolean casting on all values.
+`Arcana` performs boolean casting on all values.
 
 ```arcana
 {# true #}{% assert "1" /%}
@@ -762,6 +762,10 @@ The values contained within conditions are evaluated in their _string_ form so
 {# true #}{% assert "501" < d /%}
 
 {# false #}{% assert !("501" <= d) /%}
+
+{# false if the regular file does not exist #}{% assert "./file.txt" file /%}
+{# false if the directory does not exist #}{% assert "./dir" directory /%}
+{# false if the file does not exist #}{% assert "./file.txt" exists /%}
 ```
 
 ## <a id="loop-context"></a>Loop Context
