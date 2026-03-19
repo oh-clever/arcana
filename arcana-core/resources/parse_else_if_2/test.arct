@@ -1,0 +1,10 @@
+{% set a %}TEST{% /set %}\
+{% if a == "1" %}\
+	a is 1\
+{% else if a == "test" %}\
+	a is test\
+{% else if a == "Test" %}\
+	a is Test\
+{% else %}\
+	a is {{ a }}\
+{% /if %}\

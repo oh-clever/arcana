@@ -1,0 +1,13 @@
+{% set edit %}0{% /set %}\
+{% set isarticle %}1{% /set %}\
+{% set issingle %}1{% /set %}\
+{% if "0" %}\
+{% else if "1" %}\
+	{% if !edit && (!isarticle || issingle) %}\
+		0\
+	{% else if !edit && !issingle && isarticle %}\
+		1\
+	{% /if %}\
+{% else %}\
+	{% assert "0" /%}\
+{% /if %}\

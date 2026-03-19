@@ -9,7 +9,33 @@ web templating framework, but it is by no means optimized for this usage.
 
 ## <a id="tags"></a>Tags
 
-### <a id="t-add"></a>Add
+1. <a id="toc-t-add"></a>[Add](#t-add)
+2. <a id="toc-t-assert"></a>[Assert](#t-assert)
+3. <a id="toc-t-basename"></a>[Basename](#t-basename)
+4. <a id="toc-t-call"></a>[Call](#t-call)
+5. <a id="toc-t-comment"></a>[Comment](#t-comment)
+6. <a id="toc-t-compile"></a>[Compile](#t-compile)
+7. <a id="toc-t-count"></a>[Count](#t-count)
+8. <a id="toc-t-dirname"></a>[Dirname](#t-dirname)
+9. <a id="toc-t-div"></a>[Div](#t-div)
+10. <a id="toc-t-extend"></a>[Extend](#t-extend)
+11. <a id="toc-t-fn"></a>[Fn](#t-fn)
+12. <a id="toc-t-fordir"></a>[For-Dir](#t-fordir)
+13. <a id="toc-t-foreach"></a>[For-Each](#t-foreach)
+14. <a id="toc-t-forfile"></a>[For-File](#t-forfile)
+15. <a id="toc-t-forsplit"></a>[For-Split](#t-forsplit)
+16. <a id="toc-t-get"></a>[Get](#t-get)
+17. <a id="toc-t-if"></a>[If](#t-if)
+18. <a id="toc-t-include"></a>[Include](#t-include)
+19. <a id="toc-t-length"></a>[Length](#t-length)
+20. <a id="toc-t-mod"></a>[Mod](#t-mod)
+21. <a id="toc-t-mul"></a>[Mul](#t-mul)
+22. <a id="toc-t-nth"></a>[Nth](#t-nth)
+23. <a id="toc-t-path"></a>[Path](#t-path)
+24. <a id="toc-t-set"></a>[Set](#t-set)
+25. <a id="toc-t-sub"></a>[Sub](#t-sub)
+
+### <a id="t-add"></a>[Add](#toc-t-add)
 
 Sums an addend stored in [context](#g-context) or a literal addend and a
 templated addend. The following example uses an addend stored in context.
@@ -38,7 +64,7 @@ also appear inside of double quotes.
 16
 ```
 
-### <a id="t-assert"></a>Assert
+### <a id="t-assert"></a>[Assert](#toc-t-assert)
 
 Verifies that a [condition](#conditions) is truthy before continuing, will throw
 at compile-time otherwise.
@@ -47,7 +73,7 @@ at compile-time otherwise.
 {% assert "1" /%}
 ```
 
-### <a id="t-basename"></a>Basename
+### <a id="t-basename"></a>[Basename](#toc-t-basename)
 
 Canonicalizes a literal path or a path from [context](#g-context) and retrieves
 the basename. The path **must** exist or an error will be thrown at compile time.
@@ -76,7 +102,7 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-call"></a>Call
+### <a id="t-call"></a>[Call](#toc-t-call)
 
 Processes an external file inline, modifying the existing [context](#g-context)
 along the way.
@@ -102,7 +128,7 @@ The following other tag(s) were used in this example.
 - [_get_](#t-get)
 - [_fn_](#t-fn)
 
-### <a id="comment"></a>Comment
+### <a id="comment"></a>[Comment](#toc-t-comment)
 
 Instructs the compiler to skip all content contained within the open/close tags.
 
@@ -110,7 +136,7 @@ Instructs the compiler to skip all content contained within the open/close tags.
 {# this is a comment #}
 ```
 
-### <a id="t-compile"></a>Compile
+### <a id="t-compile"></a>[Compile](#toc-t-compile)
 
 Processes an external file inline without modifying the existing
 [context](#g-context).
@@ -133,7 +159,7 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-count"></a>Count
+### <a id="t-count"></a>[Count](#toc-t-count)
 
 Counts the number of values set to a variable from context. If the variable
 does not exist, the value returned will be zero.
@@ -152,7 +178,7 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-dirname"></a>Dirname
+### <a id="t-dirname"></a>[Dirname](#toc-t-dirname)
 
 Canonicalizes a literal path or a path from [context](#g-context) and retrieves
 the dirname. The path **must** exist or an error will be thrown at compile time.
@@ -183,7 +209,7 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-div"></a>Div
+### <a id="t-div"></a>[Div](#toc-t-div)
 
 Performs division on a dividend in [context](#g-context) or a literal dividend
 and a templated divisor. The following example uses a dividend in context.
@@ -211,7 +237,7 @@ The following example uses a literal dividend.
 3
 ```
 
-### <a id="t-extend"></a>Extend
+### <a id="t-extend"></a>[Extend](#toc-t-extend)
 
 Sets a single file as an outer template to process with the result of the
 current file. The [context](#g-context) will be passed along and the
@@ -256,7 +282,7 @@ The following other tag(s) were used in this example.
 - [_if_](#t-if)
 - [_set_](#t-set)
 
-### <a id="t-fn"></a>Fn
+### <a id="t-fn"></a>[Fn](#toc-t-fn)
 
 Registers a [function](#g-function) in [context](#g-context) which can be called
 using the [get](#t-get) tag. A function can have anywhere from 0 to _n_
@@ -303,7 +329,7 @@ respectively.  The values of `from` and `to` can be literals or from
 keyword to iterate through the collection backwards. Each loop can specify
 an optional `else` block which will trigger when the collection is empty.
 
-#### <a id="t-fordir"></a>Fordir
+#### <a id="t-fordir"></a>[Fordir](#toc-t-fordir)
 
 Loops through each directory within a given directory. The element
 [variable](#g-variable) will contain the path of the directory.
@@ -337,7 +363,7 @@ The following other tag(s) were used in this example.
 
 - [_if_](#t-if)
 
-#### <a id="t-foreach"></a>Foreach
+#### <a id="t-foreach"></a>[Foreach](#toc-t-foreach)
 
 Loops through each value in a given variable in [context](#g-context). See
 [set](#t-set) for info on how a [variable](#g-variable) can have multiple
@@ -368,7 +394,7 @@ The following other tag(s) were used in this example.
 - [_if_](#t-if)
 - [_set_](#t-set)
 
-#### <a id="t-forfile"></a>Forfile
+#### <a id="t-forfile"></a>[Forfile](#toc-t-forfile)
 
 Loops through each file in a given directory. The element
 [variable](#g-variable) will contain the path of the file.
@@ -456,7 +482,7 @@ The following other tag(s) were used in this example.
 - [_path_](#t-path)
 - [_set_](#t-set)
 
-#### <a id="t-forsplit"></a>Forsplit
+#### <a id="t-forsplit"></a>[Forsplit](#toc-t-forsplit)
 
 Loop through sections of a string split on a given delimiter. The
 [variable](#g-variable) will contain the current section. The string value can
@@ -473,7 +499,7 @@ provided literally or from [context](#g-context) as well.
 4, 3, 2, 1
 ```
 
-### <a id="t-get"></a>Get
+### <a id="t-get"></a>[Get](#toc-t-get)
 
 Gets a value from a [variable](#g-variable) in [context](#g-context) or calls
 a function in [context](#g-context). The following example gets a value from
@@ -516,10 +542,11 @@ The following other tag(s) were used in this example.
 - [_fn_](#t-fn)
 - [_set_](#t-set)
 
-### <a id="t-if"></a>If
+### <a id="t-if"></a>[If](#toc-t-if)
 
-Compiles one of two code-paths depending on whether the [condition](#conditions)
-evaluates to true or false. The `else` tag is an optional inclusion.
+Compiles one of potentially multiple code-paths depending on whether the
+[condition](#conditions) evaluates to true or false. The `else` tags are an
+optional inclusion.
 
 ```arcana
 {% if "1" %}\
@@ -533,7 +560,27 @@ evaluates to true or false. The `else` tag is an optional inclusion.
 True
 ```
 
-### <a id="t-include"></a>Include
+Else-If is also supported to check multiple conditions and compile the first
+passing [condition](#conditions).
+
+```arcana
+{% set a %}TEST{% /set %}\
+{% if !a %}\
+    `a` was not set.\
+{% else if a %}\
+    `a` was set.\
+{% else if a == "TEST" %}\
+    `a` was TEST.\
+{% else %}\
+    `a` was something else.\
+{% /if %}
+```
+
+```txt
+`a` was set.
+```
+
+### <a id="t-include"></a>[Include](#toc-t-include)
 
 Includes a file inline with no compilation. Useful for including files which
 contain `Arcana` syntax. This will panic when the file does not exist.
@@ -556,7 +603,7 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-length"></a>Length
+### <a id="t-length"></a>[Length](#toc-t-length)
 
 Counts the number of characters in a literal value or a value from context. If
 the variable does not exist, the value returned will be zero. The following
@@ -585,7 +632,7 @@ The following example uses a literal value.
 9
 ```
 
-### <a id="t-mod"></a>Mod
+### <a id="t-mod"></a>[Mod](#toc-t-mod)
 
 Performs modulo operation on a dividend in [context](#g-context) or a literal
 dividend and a templated divisor. The following example uses a dividend from
@@ -614,7 +661,7 @@ The following example uses a literal dividend.
 0
 ```
 
-### <a id="t-mul"></a>Mul
+### <a id="t-mul"></a>[Mul](#toc-t-mul)
 
 Performs multiplication on a multiplicand in [context](#g-context) or a literal
 multiplicand and a templated multiplier. The following example uses a
@@ -643,7 +690,7 @@ The following example uses a literal multiplicand.
 16
 ```
 
-### <a id="t-nth"></a>Nth
+### <a id="t-nth"></a>[Nth](#toc-t-nth)
 
 Retrieves the _n_-th element from an array of values.
 
@@ -662,21 +709,21 @@ The following other tag(s) were used in this example.
 
 - [_set_](#t-set)
 
-### <a id="t-path"></a>Path
+### <a id="t-path"></a>[Path](#toc-t-path)
 
-Computes the canonical path for a given path. The entry **must** exist in the
-file system to avoid throwing an error.
+Computes the canonical path for a given path. The compiler will panic if the
+entry does not exist in the file system.
 
 ```arcana
 {# imagine this file exists at "/home/user/file.arct" #}\
-{% path "./file.txt" /%}
+{% path "./file.txt" /%}{# only if this file exists, else this will panic #}
 ```
 
 ```txt
 /home/user/file.txt
 ```
 
-### <a id="t-set"></a>Set
+### <a id="t-set"></a>[Set](#toc-t-set)
 
 Sets a value for a [variable](#g-variable) in [context](#g-context). When
 multiple values are set for a given [variable](#g-variable), the previous value
@@ -697,7 +744,7 @@ The following other tag(s) were used in this example.
 
 - [_get_](#t-get)
 
-### <a id="t-sub"></a>Sub
+### <a id="t-sub"></a>[Sub](#toc-t-sub)
 
 Performs subtraction on a minuend in [context](#g-context) or a literal minuend
 and a templated subtracahend. The following example uses a minuend in context.

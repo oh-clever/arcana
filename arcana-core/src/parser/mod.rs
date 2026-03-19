@@ -53,7 +53,7 @@ pub(crate) enum ParseUntil {
 #[derive(Clone, Debug)]
 pub(crate) enum EndPosition {
     Add,
-    Else,
+    Else(Option<String>),
     Div,
     Fn,
     Foreach,
@@ -1103,36 +1103,98 @@ where
                 ParseUntil::EndFordir|
                 ParseUntil::EndForeach|
                 ParseUntil::EndForfile|
-                ParseUntil::EndForsplit|
-                ParseUntil::EndIf => {},
-                _ => {
-                    return self.unexpected_tag();
+                ParseUntil::EndForsplit => {
+                    self.expect_end_of_tag_buffer("else")?;
+                    self.set_end_position(EndPosition::Else(None));
+                    self.output_mut().into_step()?.flush_buffer_to_content();
+
+                    Err(Ok(FlowControl::Break))
                 },
+                ParseUntil::EndIf => {
+                    self.buffer_whitespace()?;
+
+                    match self.current()? {
+                        Some('i') => {
+                            self.push_step()?;
+                            match self.current()? {
+                                Some('f') => {
+                                    self.push_step()?;
+                                    self.buffer_whitespace()?;
+                                    self.output_mut().into_step()?.flush_buffer_to_content();
+
+                                    self.buffer_all_until_sequence("else", &['%', '}'])?;
+
+                                    let condition_str = String::from_utf8(self.output_mut().into_step()?.take_buffer()).unwrap();
+                                    self.output_mut().into_step()?.write_str(&condition_str);
+
+                                    self.set_end_position(EndPosition::Else(Some(condition_str)));
+                                    self.output_mut().into_step()?.flush_buffer_to_content();
+
+                                    Err(Ok(FlowControl::Break))
+                                },
+                                _ => self.tag_unexpected_char_expected("else", "f")?,
+                            }
+                        },
+                        _ => {
+                            self.expect_end_of_tag_buffer("else")?;
+                            self.set_end_position(EndPosition::Else(None));
+                            self.output_mut().into_step()?.flush_buffer_to_content();
+
+                            Err(Ok(FlowControl::Break))
+                        },
+                    }
+                },
+                _ => self.unexpected_tag(),
             }
-
-            self.expect_end_of_tag_buffer("else")?;
-            self.set_end_position(EndPosition::Else);
-            self.output_mut().into_step()?.flush_buffer_to_content();
-
-            Err(Ok(FlowControl::Break))
         }
         else {
             match self.parse_until() {
                 ParseUntil::EndFordir|
                 ParseUntil::EndForeach|
                 ParseUntil::EndForfile|
-                ParseUntil::EndForsplit|
-                ParseUntil::EndIf => {},
-                _ => {
-                    return self.unexpected_tag();
+                ParseUntil::EndForsplit => {
+                    self.output_mut().into_step()?.clear_buffer();
+                    self.expect_end_of_tag("else")?;
+                    self.set_end_position(EndPosition::Else(None));
+
+                    Err(Ok(FlowControl::Break))
                 },
+                ParseUntil::EndIf => {
+                    self.output_mut().into_step()?.clear_buffer();
+                    self.bypass_whitespace()?;
+
+                    match self.current()? {
+                        Some('i') => {
+                            self.push_step()?;
+                            match self.current()? {
+                                Some('f') => {
+                                    self.push_step()?;
+                                    self.output_mut().into_step()?.clear_buffer();
+                                    self.bypass_whitespace()?;
+
+                                    self.buffer_all_until_sequence("else", &['%', '}'])?;
+
+                                    let condition_str = String::from_utf8(self.output_mut().into_step()?.take_buffer()).unwrap();
+
+                                    self.set_end_position(EndPosition::Else(Some(condition_str)));
+                                    self.output_mut().into_step()?.flush_buffer_to_content();
+
+                                    Err(Ok(FlowControl::Break))
+                                },
+                                _ => self.tag_unexpected_char_expected("else", "f")?,
+                            }
+                        },
+                        _ => {
+                            self.output_mut().into_step()?.clear_buffer();
+                            self.expect_end_of_tag("else")?;
+                            self.set_end_position(EndPosition::Else(None));
+
+                            Err(Ok(FlowControl::Break))
+                        },
+                    }
+                },
+                _ => self.unexpected_tag(),
             }
-
-            self.output_mut().into_step()?.clear_buffer();
-            self.expect_end_of_tag("else")?;
-            self.set_end_position(EndPosition::Else);
-
-            Err(Ok(FlowControl::Break))
         }
     }
 
@@ -1251,7 +1313,7 @@ where
             self.output_mut().into_step()?.write_bytes_to_buffer(content);
 
             match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndFordir)
                         .into_step()?;
                     self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
@@ -1382,7 +1444,7 @@ where
             let (content, end_position) = self.parse_bypassed(ParseUntil::EndFordir)
                 .into_step()?;
             let else_content = match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndFordir)
                         .into_step()?;
                     Some(else_content)
@@ -1467,7 +1529,7 @@ where
             self.output_mut().into_step()?.write_bytes_to_buffer(content);
 
             match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForeach)
                         .into_step()?;
                     self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
@@ -1583,7 +1645,7 @@ where
             let (content, end_position) = self.parse_bypassed(ParseUntil::EndForeach)
                 .into_step()?;
             let else_content = match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForeach)
                         .into_step()?;
                     Some(else_content)
@@ -1674,7 +1736,7 @@ where
             self.output_mut().into_step()?.write_bytes_to_buffer(content);
 
             match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForfile)
                         .into_step()?;
                     self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
@@ -1805,7 +1867,7 @@ where
             let (content, end_position) = self.parse_bypassed(ParseUntil::EndForfile)
                 .into_step()?;
             let else_content = match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForfile)
                         .into_step()?;
                     Some(else_content)
@@ -1900,7 +1962,7 @@ where
             self.output_mut().into_step()?.write_bytes_to_buffer(content);
 
             match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForsplit)
                         .into_step()?;
                     self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
@@ -2042,7 +2104,7 @@ where
             let (content, end_position) = self.parse_bypassed(ParseUntil::EndForsplit)
                 .into_step()?;
             let else_content = match end_position {
-                EndPosition::Else => {
+                EndPosition::Else(_) => {
                     let (else_content, ..) = self.parse_bypassed(ParseUntil::EndForsplit)
                         .into_step()?;
                     Some(else_content)
@@ -2238,21 +2300,32 @@ where
             self.buffer_all_until_sequence("if", &['%', '}'])?;
             self.output_mut().into_step()?.flush_buffer_to_content();
 
-            let (content, end_position) = self.parse_bypassed(ParseUntil::EndIf)
+            let (content, mut end_position) = self.parse_bypassed(ParseUntil::EndIf)
                 .into_step()?;
             self.output_mut().into_step()?.write_bytes_to_buffer(content);
 
-            match end_position {
-                EndPosition::Else => {
-                    let (else_content, ..) = self.parse_bypassed(ParseUntil::EndIf)
-                        .into_step()?;
-                    self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
-                },
-                EndPosition::If => {},
-                pos => return Err(Err(InternalError::new(format!(
-                    "Invalid end position in 'if' tag, '{pos:?}'"
-                )))),
-            };
+            loop {
+                match end_position {
+                    EndPosition::Else(Some(_)) => {
+                        let else_if_content;
+                        (else_if_content, end_position) = self.parse_bypassed(ParseUntil::EndIf).into_step()?;
+                        self.output_mut().into_step()?.write_bytes_to_buffer(else_if_content);
+                        continue;
+                    },
+                    EndPosition::Else(None) => {
+                        let else_content;
+                        (else_content, end_position) = self.parse_bypassed(ParseUntil::EndIf).into_step()?;
+                        self.output_mut().into_step()?.write_bytes_to_buffer(else_content);
+                        continue;
+                    },
+                    EndPosition::If => {
+                        break;
+                    },
+                    pos => return Err(Err(InternalError::new(format!(
+                        "Invalid end position in 'if' tag, '{pos:?}'"
+                    )))),
+                };
+            }
 
             self.output_mut().into_step()?.flush_buffer_to_content();
 
@@ -2265,31 +2338,59 @@ where
 
             self.output_mut().into_step()?.clear_buffer();
 
-            let condition = IfParser::parse_result("if", self)?;
+            let mut condition = IfParser::parse_result("if", self)?.as_evaluation();
 
             self.output_mut().into_step()?.clear_buffer();
             self.bypass_whitespace()?;
             self.expect_end_of_tag("if")?;
 
-            let (content, end_position) = self.parse_bypassed(ParseUntil::EndIf)
-                .into_step()?;
-            let else_content = match end_position {
-                EndPosition::Else => {
-                    let (else_content, ..) = self.parse_bypassed(ParseUntil::EndIf)
-                        .into_step()?;
-                    Some(else_content)
-                },
-                EndPosition::If => None,
-                pos => return Err(Err(InternalError::new(format!("Invalid end position in 'if' tag, '{pos:?}'")))),
+            let (mut content, mut end_position) = {
+                let (c, p) = self.parse_bypassed(ParseUntil::EndIf).into_step()?;
+                (Some(c), p)
             };
 
-            // parse if block
-            if condition.as_evaluation() {
-                self.parse_limited(content.as_slice(), ParseUntil::EndIf).into_step()?;
+            loop {
+                match end_position {
+                    EndPosition::Else(Some(condition_str)) => {
+                        let else_if_content;
+                        (else_if_content, end_position) = self.parse_bypassed(ParseUntil::EndIf).into_step()?;
+
+                        let mut output = Vec::<u8>::new();
+                        let mut sub = TemplateParser::new(self.context().into_step()?.to_owned(), condition_str.as_bytes(), &mut output).into_step()?;
+
+                        let this_condition = IfParser::parse_result("if", &mut sub)?.as_evaluation();
+                        drop(sub);
+
+                        if !condition && this_condition {
+                            content = Some(else_if_content);
+                            condition = true;
+                        }
+
+                        continue;
+                    },
+                    EndPosition::Else(None) => {
+                        let else_content;
+                        (else_content, end_position) = self.parse_bypassed(ParseUntil::EndIf).into_step()?;
+                        if !condition {
+                            content = Some(else_content);
+                            condition = true;
+                        }
+
+                        continue;
+                    },
+                    EndPosition::If => {
+                        if !condition {
+                            content = None;
+                        }
+
+                        break;
+                    },
+                    pos => return Err(Err(InternalError::new(format!("Invalid end position in 'if' tag, '{pos:?}'")))),
+                }
             }
-            // parse else block
-            else if let Some(else_content) = else_content {
-                self.parse_limited(else_content.as_slice(), ParseUntil::EndIf).into_step()?;
+
+            if let Some(content) = content {
+                self.parse_limited(content.as_slice(), ParseUntil::EndIf).into_step()?;
             }
 
             Ok(())
@@ -3439,7 +3540,7 @@ where
 
     fn parse_end_if(&mut self) -> StepResult<()> {
         if self.bypass() {
-            self.bypass_whitespace()?;
+            self.buffer_whitespace()?;
 
             match self.parse_until() {
                 ParseUntil::EndIf => {},

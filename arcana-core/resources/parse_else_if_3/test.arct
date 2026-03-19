@@ -1,0 +1,4 @@
+{% set a %}TEST{% /set %}\
+{% else if a == "TEST" %}\
+	a is TEST\
+{% /if %}\

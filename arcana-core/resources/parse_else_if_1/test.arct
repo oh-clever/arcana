@@ -1,0 +1,8 @@
+{% set a %}TEST{% /set %}\
+{% if a != "TEST" %}\
+	a is not TEST\
+{% else if a == "TEST" %}\
+	a is TEST\
+{% else %}\
+	a is neither\
+{% /if %}\
