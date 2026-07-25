@@ -3,841 +3,973 @@
 > It's not magic, it's talent and sweat.
 > - Bertram Gilfoyle, _Silicon Valley_
 
-Okay, fine, maybe it's just sweat. **Arcana** is a templating engine intended
+Okay, fine, it's just sweat. **Arcana** is a templating engine intended
 for static file generation. In theory, it could be used as a part of a larger
 web templating framework, but it is by no means optimized for this usage.
 
-## <a id="tags"></a>Tags
+1. [Filetype](#filetype)
+2. [Getting and Setting](#getting-setting)
+    1. [Set](#t-set)
+    2. [Get](#t-get)
+3. [Functions](#functions)
+    1. [Fn](#t-fn)
+4. [Whitespace Control](#whitespace-control)
+5. [Comments](#comments)
+6. [Arithmetic](#arithmetic)
+    1. [Add](#t-add)
+    2. [Sub](#t-sub)
+    3. [Mul](#t-mul)
+    4. [Div](#t-div)
+    5. [Mod](#t-mod)
+    6. [Pow](#t-pow)
+7. [Property Accessors](#property-accessors)
+    1. [Count](#t-count)
+    2. [Length](#t-length)
+    3. [Nth](#t-nth)
+8. [Path Manipulation](#path-manipulation)
+    1. [Path](#t-path)
+    2. [Dirname](#t-dirname)
+    3. [Basename](#t-basename)
+9. [Nesting](#nesting)
+    1. [Call](#t-call)
+    2. [Compile](#t-compile)
+    3. [Include](#t-include)
+    4. [Extend](#t-extend)
+10. [Control Flow](#control-flow)
+    1. [Conditionals](#conditionals)
+        1. [Assert](#t-assert)
+        2. [If](#t-if)
+    2. [For Loops](#for-loops)
+        1. [For-Each](#t-foreach)
+        2. [For-Split](#t-forsplit)
+        3. [For-Dir](#t-fordir)
+        4. [For-File](#t-forfile)
+        5. [Loop Context](#loop-context)
+11. [Glossary](#glossary)
 
-1. <a id="toc-t-add"></a>[Add](#t-add)
-2. <a id="toc-t-assert"></a>[Assert](#t-assert)
-3. <a id="toc-t-basename"></a>[Basename](#t-basename)
-4. <a id="toc-t-call"></a>[Call](#t-call)
-5. <a id="toc-t-comment"></a>[Comment](#t-comment)
-6. <a id="toc-t-compile"></a>[Compile](#t-compile)
-7. <a id="toc-t-count"></a>[Count](#t-count)
-8. <a id="toc-t-dirname"></a>[Dirname](#t-dirname)
-9. <a id="toc-t-div"></a>[Div](#t-div)
-10. <a id="toc-t-extend"></a>[Extend](#t-extend)
-11. <a id="toc-t-fn"></a>[Fn](#t-fn)
-12. <a id="toc-t-fordir"></a>[For-Dir](#t-fordir)
-13. <a id="toc-t-foreach"></a>[For-Each](#t-foreach)
-14. <a id="toc-t-forfile"></a>[For-File](#t-forfile)
-15. <a id="toc-t-forsplit"></a>[For-Split](#t-forsplit)
-16. <a id="toc-t-get"></a>[Get](#t-get)
-17. <a id="toc-t-if"></a>[If](#t-if)
-18. <a id="toc-t-include"></a>[Include](#t-include)
-19. <a id="toc-t-length"></a>[Length](#t-length)
-20. <a id="toc-t-mod"></a>[Mod](#t-mod)
-21. <a id="toc-t-mul"></a>[Mul](#t-mul)
-22. <a id="toc-t-nth"></a>[Nth](#t-nth)
-23. <a id="toc-t-path"></a>[Path](#t-path)
-24. <a id="toc-t-set"></a>[Set](#t-set)
-25. <a id="toc-t-sub"></a>[Sub](#t-sub)
+## <a id="filetype"></a>Filetype
 
-### <a id="t-add"></a>[Add](#toc-t-add)
+The expected filetype for Arcana is a UTF-8 encoded text file with the `arct`
+extension. The file extension is optional, but it is the expected filetype of
+the [official Vim syntax highlighting plugin](https://github.com/oh-clever/arcana.vim).
 
-Sums an addend stored in [context](#g-context) or a literal addend and a
-templated addend. The following example uses an addend stored in context.
+## <a id="getting-setting"></a>Getting and Setting
 
-```arcana
-{% set x %}5{% /set %}\
-{% add x %}10{% /add %}
+> I have a value that I want to use in multiple places without defining it multiple
+> times.
+
+```arct
+{% set projectname %}Arcana{% /set %}\
+
+# {{ projectname }}
+
+**{{ projectname }}** is a templating engine intended for static file generation&hellip;
 ```
 
-```txt
-15
+This would compile to the following [value](#g-value).
+
+```md
+# Arcana
+
+**Arcana** is a templating engine intended for static file generation&hellip;
 ```
 
-The following other tag(s) were used in this example.
+<a id="t-set"></a>The `set` tag compiles the encapsulated content
+[content](#g-content) using an [unsealed](#g-unsealed) compiler and assigns the
+resulting [value](#g-value) to the given [variable](#g-variable) in
+[context](#g-context). Variable names (as well as function names) can contain upper
+and lower case alphabetic characters [`a-zA-Z`], numbers (but cannot start with a
+number) (`[0-9]`), the period character (`.`), and the underscore character (`_`). If
+you're more of a regex person, then the valid pattern for a variable name is
+`[a-zA-Z]([a-zA-Z0-9_.])*`.
 
-- [_set_](#t-set)
+The `set` tag also contains some more advanced behavior. It is list-y. Setting to
+the same variable multiple times seemingly overwrites the value when using `get`,
+but the value is also added to the end of a list of previous values. This assists
+in constructing lists for loops.
 
-The following example uses a literal addend, `12` in this case. The number could
-also appear inside of double quotes.
+<a id="t-get"></a>The `get` tag references a variable (or [function](#g-function))
+and outputs the resulting value in-place.
 
-```arcana
-{% add 12 %}4{% /add %}
-```
+## <a id="functions"></a>Functions
 
-```txt
-16
-```
+> I have content that I want to use in multiple places without defining it multiple
+> times.
 
-### <a id="t-assert"></a>[Assert](#toc-t-assert)
-
-Verifies that a [condition](#conditions) is truthy before continuing, will throw
-at compile-time otherwise.
-
-```arcana
-{% assert "1" /%}
-```
-
-### <a id="t-basename"></a>[Basename](#toc-t-basename)
-
-Canonicalizes a literal path or a path from [context](#g-context) and retrieves
-the basename. The path **must** exist or an error will be thrown at compile time.
-The following example uses a literal path.
-
-```arcana
-{% basename "./this/file.txt" /%}
-```
-
-```txt
-file.txt
-```
-
-The following example uses a path from [context](#g-context).
-
-```arcana
-{% set file %}./this/file.txt{% /set %}\
-{% basename file /%}
-```
-
-```txt
-file.txt
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-### <a id="t-call"></a>[Call](#toc-t-call)
-
-Processes an external file inline, modifying the existing [context](#g-context)
-along the way.
-
-```arcana
-{# ./functions/header.arct #}\
-{% fn header(lvl, txt) %}\
-    <h{{ lvl }}>{{ txt }}</h{{ lvl }}>\
+```arct
+{% fn h2(anchor, text) %}\
+	## <a id="{{ anchor }}"></a>{{ text }}\
 {% /fn %}\
+
+{{ h2("getting-setting", "Getting and Setting") }}
+
+> I have a value that I want to use in multiple places&hellip;
+
+{{ h2("functions", "Functions") }}
+
+> I have content that I want to use in multiple places&hellip;
 ```
 
-```arcana
-{% call "./functions/header.arct" /%}\
-{{ header("2", "Hello") }}
+This would compile to the following value (you're going to get real sick of this phrase).
+
+```md
+## <a id="getting-setting"></a>Getting and Setting
+
+> I have a value that I want to use in multiple places&hellip;
+
+## <a id="functions"></a>Functions
+
+> I have content that I want to use in multiple places&hellip;
 ```
 
-```html
-<h2>Hello</h2>
+<a id="t-fn"></a>The `fn` tag copies the encapsulated [content](#g-content) to
+[context](#g-context) and when retrieved, assigns the passed arguments to the
+pre-defined variables within the context of a [sealed](#sealed) compiler and places
+the resulting value in-place.
+
+## <a id="whitespace-control"></a>Whitespace Control
+
+> What is the deal with these trailing backslashes in each `arct` example?
+
+These are used for whitespace control. A backslash tells the compiler to ignore all
+whitespace until the next non-whitespace character.
+
+```arct
+\     This \
+\\    will \\\\\\\\\
+\\\be \\\\\\
+\\\               \\\\neater \
+\\ 
+than \
+\\\\\     \\\\\    expected.
 ```
 
-The following other tag(s) were used in this example.
-
-- [_get_](#t-get)
-- [_fn_](#t-fn)
-
-### <a id="comment"></a>[Comment](#toc-t-comment)
-
-Instructs the compiler to skip all content contained within the open/close tags.
-
-```arcana
-{# this is a comment #}
-```
-
-### <a id="t-compile"></a>[Compile](#toc-t-compile)
-
-Processes an external file inline without modifying the existing
-[context](#g-context).
-
-```arcana
-{# ./set/name.arct #}\
-{% set name %}Fred{% /set %}{{ name }}, \
-```
-
-```arcana
-{% set name %}Mark{% /set %}\
-{% compile "./set/name.arct" /%}{{ name }}
-```
+This would compille to the following value.
 
 ```txt
-Fred, Mark
+This will be neater than expected.
 ```
 
-The following other tag(s) were used in this example.
+> Okay, that is all well and good; but how do I include a backslash character?
 
-- [_set_](#t-set)
+All Arcana syntax (including the whitespace control [backslash] character), must be
+included using a separate file and the [`include`](#t-include) tag.
 
-### <a id="t-count"></a>[Count](#toc-t-count)
+## <a id="comments"></a>Comments
 
-Counts the number of values set to a variable from context. If the variable
-does not exist, the value returned will be zero.
+> I want to say some stuff, but I don't want it to do some stuff.
 
-```arcana
-{% set x %}One{% /set %}\
-{% set x %}Two{% /set %}\
-{% count x /%}
+Perfect use for a comment.
+
+```arct
+{# This is a comment.
+
+It can be multiline.
+
+It can contain another opening tag {#
+
+But it will close on the first closing tag. #}\
+
+Hello.
 ```
+
+This would compile to the following value.
 
 ```txt
-2
+Hello.
 ```
 
-The following other tag(s) were used in this example.
+## <a id="arithmetic"></a>Arithmetic
 
-- [_set_](#t-set)
+> I know this is all strings and stuff, but what if I need math?
 
-### <a id="t-dirname"></a>[Dirname](#toc-t-dirname)
+Arcana supports addition, subtraction, multiplication, division, modulo, and
+exponents. All variables are treated as strings. When arithmetic is needed, the
+compiler will attempt to parse the string into a numeric value. The tags for each of
+these operations functions in the same way. The value within the opening tag is the
+left-most of the two numbers in the equation. The tag name, aka the operator, is the
+operator itself that separates the two numbers. The content found within the tag is
+the right-most of the two numbers.
 
-Canonicalizes a literal path or a path from [context](#g-context) and retrieves
-the dirname. The path **must** exist or an error will be thrown at compile time.
-The following example uses a literal path.
+<a id="t-add"></a>Addition is a good starting point.
 
-```arcana
-{# assume this file exists at "/home/user/file.txt" #}\
-{% dirname "./this/file.txt" /%}
+```arct
+{% add 4 %}2{% /add %}
 ```
+
+This would compile to the following value.
 
 ```txt
-/home/user/this
+6
 ```
 
-The following example uses a path from [context](#g-context).
+> <a id="t-sub"></a>Okay, but what if I want to use a variable as the first number?
 
-```arcana
-{# assume this file exists at "/home/user/file.txt" #}\
-{% set file %}./this/file.txt{% /set %}\
-{% dirname file /%}
+```arct
+{% set x %}\
+	{% add 4 %}\
+		2\
+	{% /add %}\
+{% /set %}\
+
+{% sub x %}3{% /sub %}
 ```
 
-```txt
-/home/user/this
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-### <a id="t-div"></a>[Div](#toc-t-div)
-
-Performs division on a dividend in [context](#g-context) or a literal dividend
-and a templated divisor. The following example uses a dividend in context.
-
-```arcana
-{% set x %}4{% /set %}\
-{% div x %}2{% /div %}
-```
-
-```txt
-2
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-The following example uses a literal dividend.
-
-```arcana
-{% div 12 %}4{% /set %}
-```
+This would compile to the following value.
 
 ```txt
 3
 ```
 
-### <a id="t-extend"></a>[Extend](#toc-t-extend)
+> <a id="t-mul"></a>Makes sense, but now I _also_ want to use a variable as the second number.
 
-Sets a single file as an outer template to process with the result of the
-current file. The [context](#g-context) will be passed along and the
-[content](#g-content) will be assigned to the special [context](#g-context)
-[variable](#g-variable) `CONTENT`. If the extend tag is used multiple times
-within the same template, the last tag used wins.
+```arct
+{% set x %}{% add 4 %}2{% /add %}{% /set %}\
+{% set y %}{% sub x %}3{% /sub %}{% /set %}\
 
-```arcana
-{# ../papa.arct #}\
-
-{% assert name /%}\
-{% assert paragraph /%}\
-
-<h1>{{ name }}</h1>
-<p>{{ paragraph }}</p>\
-
-{% if CONTENT %}
-<hr>
-<p>{{ CONTENT }}</p>\
-{% /if %}
+{% mul y %}{{ y }}{% /mul %}
 ```
 
-```arcana
-{% extend "../papa.arct" /%}\
-
-{% set name %}Fred{% /set %}\
-{% set paragraph %}This is a paragraph.{% /set %}\
-
-And here is some output content.
-```
-
-```html
-<h1>Fred</h1>
-<p>This is a paragraph.</p>
-<hr>
-<p>And here is some output content.</p>
-```
-
-The following other tag(s) were used in this example.
-
-- [_assert_](#t-assert)
-- [_if_](#t-if)
-- [_set_](#t-set)
-
-### <a id="t-fn"></a>[Fn](#toc-t-fn)
-
-Registers a [function](#g-function) in [context](#g-context) which can be called
-using the [get](#t-get) tag. A function can have anywhere from 0 to _n_
-arguments.
-
-```arcana
-{% fn commas(one, two, three) %}\
-    {{ one }}, {{ two }}{% if three %}, {{ three }}{% /if %}.\
-{% /fn %}\
-{{ commas("First", "Second", "Third") }}
-{{ commas("First", "Second") }}
-```
-
-```txt
-First, Second, Third.
-First, Second.
-```
-
-The following other tag(s) were used in this example.
-
-- [_get_](#t-get)
-- [_if_](#t-if)
-
-### <a id="t-loops"></a>Loops
-
-Below is a generic syntax applicable to each type of loop.
-
-```txt
-{% forTYPE ITEM COLLECTION [from START] [to END] [as CTX] [reversed] %}
-    CONTENT
-{% else %}
-    No items.
-{% /forTYPE %}
-```
-
-Loops will iterate through a `COLLECTION` and generate the encapsulated `CONTENT`
-for each item in the collection. The `TYPE` of collection iterated over is
-dependent upon the specific loop tag used. Each type of loop can specify a
-variable to contain [`CTX`](#loop-context) so that templating can be
-performed based on details regarding the loop's state. Each type of loop can
-specify a `START` and `END` index by using the `from` and `to` keywords
-respectively.  The values of `from` and `to` can be literals or from
-[context](#g-context). Each type of loop can also specify the `reversed`
-keyword to iterate through the collection backwards. Each loop can specify
-an optional `else` block which will trigger when the collection is empty.
-
-#### <a id="t-fordir"></a>[Fordir](#toc-t-fordir)
-
-Loops through each directory within a given directory. The element
-[variable](#g-variable) will contain the path of the directory.
-
-Assume the following file stucture for the next example.
-
-```txt
-./
- \
-  a-dir/
-       \
-        First/
-        Second/
-        Third/
-```
-
-```arcana
-{% fordir d in "./a-dir" as dir_loop %}\
-    {% if dir_loop.isfirst %}{% else %}, {% /if %}\
-    "{{ d }}"\
-{% else %}\
-    {# no directories in "./a-dir" #}\
-{% /fordir %}
-```
-
-```txt
-"./a-dir/First", "./a-dir/Second", "./a-dir/Third"
-```
-
-The following other tag(s) were used in this example.
-
-- [_if_](#t-if)
-
-#### <a id="t-foreach"></a>[Foreach](#toc-t-foreach)
-
-Loops through each value in a given variable in [context](#g-context). See
-[set](#t-set) for info on how a [variable](#g-variable) can have multiple
-values.
-
-```arcana
-The siblings are \
-{% set names %}Mark{% /set %}\
-{% set names %}Fred{% /set %}\
-{% set names %}Karissa{% /set %}\
-{% foreach name in items as name_loop %}\
-    {% if name_loop.isfirst %}{% else %}, {% /if %}\
-        {% if name_loop.islast %}and {% /if %}\
-        {{ name }}\
-    {% /if %}\
-    {% if name_loop.islast %}.{% /if %}\
-{% else %}\
-    {# no items #}
-{% /foreach %}
-```
-
-```txt
-The siblings are Mark, Fred, and Karissa.
-```
-
-The following other tag(s) were used in this example.
-
-- [_if_](#t-if)
-- [_set_](#t-set)
-
-#### <a id="t-forfile"></a>[Forfile](#toc-t-forfile)
-
-Loops through each file in a given directory. The element
-[variable](#g-variable) will contain the path of the file.
-
-Assume the following file stucture and contents for the next example.
-
-```txt
-./
- \
-  sibling.arct
-  siblings/
-          \
-           first.arct
-           second.arct
-           third.arct
-```
-
-```arcana
-{# ./sibling.arct #}\
-{% assert sibling.filepath /%}\
-{% call sibling.filepath /%}\
-{% assert sibling.name /%}\
-{% assert sibling.description /%}\
-<tr><td>{{ sibling.name }}</td><td>{{ sibling.description }}.</td></tr>\
-```
-
-```arcana
-{# ./siblings/first.arct #}\
-{% set sibling.name %}Mark{% /set %}\
-{% set sibling.description %}The elder{% /set %}\
-```
-
-```arcana
-{# ./siblings/second.arct #}\
-{% set sibling.name %}Fred{% /set %}\
-{% set sibling.description %}The poor middle-child{% /set %}
-```
-
-```arcana
-{# ./siblings/third.arct #}\
-{% set sibling.name %}Karissa{% /set %}\
-{% set sibling.description %}Da baby{% /set %}\
-```
-
-```arcana
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>\
-        {% set sibsdir %}{% path "./siblings" /%}{% /set %}\
-        {% set sibtemplate %}{% path "./sibling.arct" /%}{% /set %}\
-        {% forfile sibling.filepath in sibsdir %}
-        {% compile sibtemplate /%}\
-        {% else %}\
-            {# no files in "./a-dir" #}\
-        {% /fordir %}
-    </tbody>
-</table>
-```
-
-```html
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr><td>Mark</td><td>The elder.</td></tr>
-        <tr><td>Fred</td><td>The poor middle-child.</td></tr>
-        <tr><td>Karissa</td><td>Da baby.</td></tr>
-    </tbody>
-</table>
-```
-
-The following other tag(s) were used in this example.
-
-- [_call_](#t-call)
-- [_compile_](#t-compile)
-- [_path_](#t-path)
-- [_set_](#t-set)
-
-#### <a id="t-forsplit"></a>[Forsplit](#toc-t-forsplit)
-
-Loop through sections of a string split on a given delimiter. The
-[variable](#g-variable) will contain the current section. The string value can
-be provided literally or from [context](#g-context). The delimiter can be
-provided literally or from [context](#g-context) as well.
-
-```arcana
-{% forsplit number in "0,1,2,3,4" on "," from "1" to "4" as loop reversed %}\
-    {% if !loop.isfirst %}, {% /if %}{{ number }}\
-{% /forsplit %}
-```
-
-```txt
-4, 3, 2, 1
-```
-
-### <a id="t-get"></a>[Get](#toc-t-get)
-
-Gets a value from a [variable](#g-variable) in [context](#g-context) or calls
-a function in [context](#g-context). The following example gets a value from
-[context](#g-context).
-
-```arcana
-{% set msg %}Hi{% /set %}\
-{{ msg }}
-```
-
-```txt
-Hi
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-The following example calls a function in [context](#g-context).
-
-```arcana
-{% fn commas(a, b, c) %}\
-    {{ a }}, {{ b }}{% if c %}, {{ c }}{% /if %}\
-{% /fn %}\
-
-{% set d %}foo{% /set %}\
-{% set e %}bar{% /set %}\
-
-{{ commas(d, e, "baz") }}
-{{{ commas(d, e) }}
-```
-
-```txt
-foo, bar, baz
-foo, bar
-```
-
-The following other tag(s) were used in this example.
-
-- [_fn_](#t-fn)
-- [_set_](#t-set)
-
-### <a id="t-if"></a>[If](#toc-t-if)
-
-Compiles one of potentially multiple code-paths depending on whether the
-[condition](#conditions) evaluates to true or false. The `else` tags are an
-optional inclusion.
-
-```arcana
-{% if "1" %}\
-    True\
-{% else %}\
-    False\
-{% /if %}
-```
-
-```txt
-True
-```
-
-Else-If is also supported to check multiple conditions and compile the first
-passing [condition](#conditions).
-
-```arcana
-{% set a %}TEST{% /set %}\
-{% if !a %}\
-    `a` was not set.\
-{% else if a %}\
-    `a` was set.\
-{% else if a == "TEST" %}\
-    `a` was TEST.\
-{% else %}\
-    `a` was something else.\
-{% /if %}
-```
-
-```txt
-`a` was set.
-```
-
-### <a id="t-include"></a>[Include](#toc-t-include)
-
-Includes a file inline with no compilation. Useful for including files which
-contain `Arcana` syntax. This will panic when the file does not exist.
-
-```arcana
-{# ./includes/file.arct #}\
-{% set name %}Fred{% /set %}\
-```
-
-```arcana
-{% include "./includes/file.arct" /%}
-```
-
-```txt
-{# ./includes/file.arct#}\
-{% set name %}Fred{% /set %}\
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-### <a id="t-length"></a>[Length](#toc-t-length)
-
-Counts the number of characters in a literal value or a value from context. If
-the variable does not exist, the value returned will be zero. The following
-example uses a value from context.
-
-```arcana
-{% set x %}Something{% /set %}\
-{% length x /%}
-```
+This would compile to the following value.
 
 ```txt
 9
 ```
 
-The following other tag(s) were used in this example.
+> <a id="t-div"></a>Division?
 
-- [_set_](#t-set)
-
-The following example uses a literal value.
-
-```arcana
-{% length "Something" /%}
+```arct
+{% div 8 %}4{% /div %}
 ```
 
-```txt
-9
-```
-
-### <a id="t-mod"></a>[Mod](#toc-t-mod)
-
-Performs modulo operation on a dividend in [context](#g-context) or a literal
-dividend and a templated divisor. The following example uses a dividend from
-context.
-
-```arcana
-{% set x %}4{% /set %}\
-{% mod x %}2{% /mod %}
-```
-
-```txt
-0
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-The following example uses a literal dividend.
-
-```arcana
-{% mod 4 %}2{% /mod %}
-```
-
-```txt
-0
-```
-
-### <a id="t-mul"></a>[Mul](#toc-t-mul)
-
-Performs multiplication on a multiplicand in [context](#g-context) or a literal
-multiplicand and a templated multiplier. The following example uses a
-multiplicand from context.
-
-```arcana
-{% set x %}4{% /set %}\
-{% mul x %}2{% /mul %}
-```
-
-```txt
-8
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-The following example uses a literal multiplicand.
-
-```arcana
-{% mul 8 %}2{% /mul %}
-```
-
-```txt
-16
-```
-
-### <a id="t-nth"></a>[Nth](#toc-t-nth)
-
-Retrieves the _n_-th element from an array of values.
-
-```arcana
-{% set arr %}One{% /set %}\
-{% set arr %}Two{% /set %}\
-{% set arr %}Three{% /set %}\
-{% nth arr %}1{% /nth %}
-```
-
-```txt
-Two
-```
-
-The following other tag(s) were used in this example.
-
-- [_set_](#t-set)
-
-### <a id="t-path"></a>[Path](#toc-t-path)
-
-Computes the canonical path for a given path. The compiler will panic if the
-entry does not exist in the file system.
-
-```arcana
-{# imagine this file exists at "/home/user/file.arct" #}\
-{% path "./file.txt" /%}{# only if this file exists, else this will panic #}
-```
-
-```txt
-/home/user/file.txt
-```
-
-### <a id="t-set"></a>[Set](#toc-t-set)
-
-Sets a value for a [variable](#g-variable) in [context](#g-context). When
-multiple values are set for a given [variable](#g-variable), the previous value
-is not overwritten, but is masked by the new value. These values can then be
-iterated over in the order in which they were set using the
-[foreach](#t-foreach) tag.
-
-```arcana
-{% set v %}1{% /set %}\
-{{ v }}
-```
-
-```txt
-1
-```
-
-The following other tag(s) were used in this example.
-
-- [_get_](#t-get)
-
-### <a id="t-sub"></a>[Sub](#toc-t-sub)
-
-Performs subtraction on a minuend in [context](#g-context) or a literal minuend
-and a templated subtracahend. The following example uses a minuend in context.
-
-```arcana
-{% set x %}4{% /set %}\
-{% sub x %}2{% /sub %}
-```
+This would compile to the following value.
 
 ```txt
 2
 ```
 
-The following other tag(s) were used in this example.
+> <a id="t-mod"></a>Modulo?
 
-- [_set_](#t-set)
-
-The following example uses a literal minuend.
-
-```arcana
-{% sub 5 %}4{% /sub %}
+```arct
+{% mod 5 %}2{% /mod %}
 ```
+
+This would compile to the following value.
 
 ```txt
 1
 ```
 
-## <a id="conditions"></a>Conditions
+> <a id="t-pow"></a>Exponents?
 
-A set of one or more of logical assertions evaluating to true or false. These
-can be nested using parenthetical notation or conjoined using the
-short-circuiting _and_ or _or_ operators and negated using the _not_ operator.
-The values contained within conditions are evaluated in their _string_ form so
-`Arcana` performs boolean casting on all values.
-
-```arcana
-{# true #}{% assert "1" /%}
-{# true #}{% assert "Hello, World!" /%}
-
-{# false #}{% assert "0" /%}
-{# false #}{% assert "" /%}
-{# false #}{% assert a /%}
-
-{# true #}{% set a %}1{% /set %}
-{# true #}{% assert "1" == a /%}
-
-{# true #}{% set b %}0{% /set %}
-{# true #}{% assert a || b /%}
-
-{# true #}{% assert (a && b) || "1" /%}
-
-{# true #}{% set d %}500{% /set %}
-{# true #}{% assert d > a /%}
-
-{# true #}{% assert "501" > d /%}
-
-{# true #}{% assert "501" >= d /%}
-
-{# true #}{% assert "501" != d /%}
-
-{# true #}{% assert "501" <= d /%}
-{# true #}{% assert "501" < d /%}
-
-{# false #}{% assert !("501" <= d) /%}
-
-{# false if the regular file does not exist #}{% assert "./file.txt" file /%}
-{# false if the directory does not exist #}{% assert "./dir" directory /%}
-{# false if the file does not exist #}{% assert "./file.txt" exists /%}
+```arct
+{% pow 5 %}2{% /pow %}
 ```
 
-## <a id="loop-context"></a>Loop Context
+This would compile to the following value.
 
-The optional loop context contains useful information regarding the state of
-the loop.
+```txt
+25
+```
 
-`index`: The current index of the iteration. Zero indexed.
+## <a id="property-accessors"></a>Property Accessors
 
-`size`: The length of the collection being iterated over.
+Being that [variables](#g-variable) are just listy amalgamations of strings, they
+have some properties we might want to access.
 
-`isfirst`: Whether or not the current iteration is the first.
+<a id="t-length"></a>Strings have a number of characters.
 
-`islast`: Whether or not the current iteration is the last.
+```arct
+{% set x %}This is a value.{% /set %}\
 
-## <a id="glossary"></a>Glossary
+{% length x /%}
+```
 
-<a id="g-content">**Content**</a>: The final output of a template.
+This would compile to the following value.
 
-<a id="g-context">**Context**</a>: Functions, values, and other data currently
-in-scope and usable.
+```txt
+16
+```
 
-<a id="g-function">**Function**</a>: A block of Arcana keyed with a given
-name for future retrieval and compilation against an optional set of named
-arguments.
+<a id="t-count"></a>Lists have a count of elements.
 
-<a id="g-variable">**Variable**</a>: A value in context keyed with a given
-name for future retrieval.
+```arct
+{% set x %}0{% /set %}\
+{% set x %}1{% /set %}\
+{% set x %}2{% /set %}\
+
+{% count x /%}
+```
+
+This would compile to the following value.
+
+```txt
+3
+```
+
+In the case that a variable is unset, `count` would return 0.
+
+<a id="t-nth"></a>Lists also have an element at each specific index.
+
+```arct
+{% set x %}Foo{% /set %}\
+{% set x %}Bar{% /set %}\
+{% set x %}Baz{% /set %}\
+
+{% nth x %}1{% /nth %}
+```
+
+This would compile to the following value.
+
+```txt
+Bar
+```
+
+## <a id="path-manipulation"></a>Path Manipulation
+
+Generating static files usually means that we're going to read static files as well.
+In this case, it would be helpful to have some ability to manipulate paths.
+
+<a id="t-path"></a>While working inside of the same directory, using a relative path
+is perfectly fine, but what if we want to pass around the same [variable](#g-variable)
+representing a relative path to multiple files, each of which may not live in the
+same directory? This is the job for an absoltue path. The downside of this is that to
+obtain an absolute path, the file-system-object **needs** to exist. Without it, the
+compiler will return an error.
+
+The following example assumes that the file `test.txt` exists in the same directory
+as the example template (`/home/test/template/test.arct`).
+
+```arct
+{% path "./test.txt" /%}
+```
+
+This would compile to the following value.
+
+```txt
+/home/test/template/test.txt
+```
+
+Expanding upon this example, assume that `test.txt` exists in the directory
+`content`, which is in the same directory as the same example template.
+
+```arct
+{% path "./test.txt" in "content" /%}
+```
+
+This would compile to the following value.
+
+```txt
+/home/test/template/content/test.txt
+```
+
+
+> <a id="t-dirname"></a>I have a path to a file, but I just need the directory.
+
+```arct
+{# /home/test/template/test.arct #}\
+{% set file %}{% path "./test.txt" /%}{% /set %}\
+{% dirname file /%}
+```
+
+This would compile to the following value.
+
+```txt
+/home/test/template
+```
+
+> <a id="t-basename"></a>I have a path to a file, but I just want the filename.
+
+```arct
+{# /home/test/template/test.arct #}\
+{% set file %}{% path "./test.txt" /%}{% /set %}\
+{% basename file /%}
+```
+
+This would compile to the following value.
+
+```txt
+test.txt
+```
+
+## <a id="nesting"></a>Nesting
+
+> What is all of this path manipulation stuff about?
+
+In a more complex static templating environment, templates in one directory may call
+templates in another directory. The nested templates may rely on paths that were set
+by from other directories and therefore must be absolute instead of relative. These
+path manipulation tags become very useful when dealing with template nesting. Nesting
+increases the reusability of your templates. Allowing them to be called from numerous
+other templates. Keeping your environment
+[DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+
+> This is getting a bit confusing in English. What is a nested template?
+
+<a id="t-call"></a>The simplest form of nesting is to just include the compiled
+[value](#g-value) and [context](#g-context) of one template file in another.
+
+```arct
+{# /home/test/template/fragments/header.arct #}\
+
+<h1 class="section-header">Section: {{ name }}</h1>\
+```
+
+```arct
+{# /home/test/template/page.arct #}\
+
+{% set name %}Arcana Call Tag{% /set %}\
+{% call "./fragments/header.arct" /%}
+```
+
+The file `page.arct` would compile to the following value.
+
+```html
+<h1 class="section-header">Section: Arcana Call Tag</h1>
+```
+
+The `call` tag uses an [unsealed](#g-unsealed) compiler. This leaves the entire
+context exposed after it is complete. This makes it very useful for calling templates
+that contain only [functions](#functions). Improving your separation of concerns and
+template readability.
+
+```arct
+{# /home/test/template/function/header.arct #}\
+
+{% fn header(name) %}\
+    <h1 class="section-header">Section: {{ name }}</h1>\
+{% /fn %}\
+```
+
+```arct
+{# /home/test/template/page.arct #}\
+
+{% call "function/header.arct" /%}\
+
+{{ header("Arcana Nested Functions") }}
+<p>Are very cool.</p>
+
+{{ header("Tidy Code") }}
+<p>Is also very cool.</p>
+```
+
+The file `page.arct` would compile to the following value.
+
+```html
+<h1 class="section-header">Section: Arcana Nested Functions</h1>
+<p>Are very cool.</p>
+
+<h1 class="section-header">Section: Tidy Code</h1>
+<p>Is also very cool.</p>
+```
+
+> <a id="t-compile"></a>What if I only want the output value of the nested template
+> and I want to throw out the context?
+
+```arct
+{# /home/test/template/fragments/header.arct #}\
+
+{% set tagname %}h{{ taglevel }}{% /set %}\
+
+<{{ tagname }} class="section-header">Section: {{ name }}</{{ tagname }}>\
+```
+
+```arct
+{# /home/test/template/page.arct #}\
+
+{% set taglevel %}1{% /set %}\
+{% set name %}Arcana Compile Tag{% /set %}\
+{% compile "./fragments/header.arct" /%}
+{{ tagname }}
+```
+
+The file `page.arct` would compile to the following value.
+
+```txt
+<h1 class="section-header">Section: Arcana Compile Tag</h1>
+
+```
+
+Note the empty line representing the `tagname` [variable](#g-variable). This is
+because the `compile` tag uses a [sealed](#g-sealed) compiler.
+
+> <a id="t-include"></a>What about literal content? Can I have a file that is not
+> compiled at all?
+
+Assume the text file in this example is located at the path
+`/home/test/template/resources/text.txt`.
+
+```txt
+Arcana whitespace control is performed using the "\" character.
+The Arcana "set" tag looks like this: {% set test %}Hello, World!{% /set %}
+```
+
+```arct
+{# /home/test/template/page.arct #}\
+
+{% include "resources/text.txt" /%}
+```
+
+The file `page.arct` would compile to the following value.
+
+```txt
+Arcana whitespace control is performed using the "\" character.
+The Arcana "set" tag looks like this: {% set test %}Hello, World!{% /set %}
+```
+
+One quirk of the `include` tag is the removal of the final newline character of the
+file. This is because it would otherwise be impossible to include a file without it
+ending in a new line on Linux systems.
+
+> <a id="t-extend"></a>What if I have a template that acts a some sort of container?
+> Like a predefined header, a dynamic body, and a predefined footer. How would I
+> neatly nest this?
+
+```arct
+{# /home/test/template/base.arct #}\
+
+---
+page: {{ pageno }}
+---
+
+# {{ title }}
+
+{{ CONTENT }}
+
+`This document was templated using the Arcana templating engine.`
+```
+
+```arct
+{# /home/test/template/page.arct #}\
+
+{% extend "./base.arct" /%}\
+
+{% set pageno %}1{% /set %}\
+{% set title %}Test Page{% /set %}\
+
+This is the content on the page. It will be placed right where the
+`CONTENT` variable is retrieved.\
+```
+
+The file `page.arct` would compile to the following.
+
+```md
+---
+page: 1
+---
+
+# Test Page
+
+This is the content on the page. It will be placed right where the
+`CONTENT` variable is retrieved.
+
+`This document was templated using the Arcana templating engine.`
+```
+
+The `extend` tag defines a parent template to be compiled using an unsealed compiler
+after the compilation of the current template is completed. The value output by the
+child template is stored in context as the special variable `CONTENT`.
+
+## <a id="control-flow"></a>Control Flow
+
+> I wanna get fancy with conditional statements and loops for maximum templating
+> madness.
+
+Well, you're in luck. Arcana supports if-statements, assertions, and multiple types
+of for-loops. Assertions and if-statements both support the same types of
+<a id="conditionals"></a>logical conditions. These logical conditions are best
+exemplified with assertions that will evaluate to true.
+
+```arct
+{# boolean-ish #}\
+{% assert 1 /%}\
+{% assert !0 /%}\
+
+{# numeric #}\
+{% assert 1 > 0 /%}\
+{% assert 3 < 22 /%}\
+{% assert 3 >= 2 /%}\
+{% assert 4 <= 6 /%}\
+
+{# strings #}\
+{% assert "this" != "that" /%}\
+{% assert "foo" == "foo" /%}\
+
+{# chained and nested conditions #}\
+{% assert !(34 <= 33) && (0 || 1) /%}\
+{% assert ((0 || 1) && !(100 > 99 && !(6 > 5))) /%}\
+
+true
+```
+
+This would compile to the following value.
+
+```txt
+true
+```
+
+There are also several unconventional boolean operators. These are `file`,
+`directory`, and `exists`. Each of which checks the filesystem for the preceeding
+value as a path.
+
+```arct
+{% assert "./this.txt" file /%}{# will return true if the path is a file #}\
+{% assert "./this" directory /%}{# will return true if the path is a directory #}\
+{% assert "./this" exists /%}{# will return true if the path is a file of directory #}\
+
+true
+```
+
+This would compile to the following value given `./this.txt` is a file and `./this` is a directory.
+
+```txt
+true
+```
+
+<a id="t-assert"></a>While the preceeding examples for conditionals are also
+sufficient for explaining the syntax of the `assert` tag, its usage still needs
+defined. The `assert` tag enforces that a logical condition is true before
+continuing. If this logical condition is false, the compiler displays an error and
+exits. This can be useful in cases when you want the compiler to fail-fast or when
+you want to ensure a template is not compiled by a build script (`{% assert 0 /%}`).
+
+> <a id="t-if"></a>What if?
+
+The `if`, `else if`, and `else` tags define branches of a template that will be
+traversed by the compiler when the first true logical condition is encountered.
+
+```arct
+{% if 0 %}\
+    Zero is true.\
+{% else if 1 == 0 %}\
+    Meaning no longer exists.\
+{% else if 0 || 1 %}\
+    All is right with the universe.\
+{% else %}\
+    The end is near.\
+{% /if %}
+```
+
+This would compile to the following value.
+
+```txt
+All is right with the universe.
+```
+
+These potential branches are fully-parsed, but lazily-evaluated by an
+[unsealed](#g-unsealed) compiler. This means that incorrect syntax in an unused
+branch will still cause an error, but the incorrect usage of a variable or the calling
+of an undefined function will not.
+
+```arct
+{% if 0 %}\
+    {% set x %}0\
+{% /if %}\
+
+What?
+```
+
+The previous example would return an error.
+
+```arct
+{% if 0 %}\
+    {% add x %}1{% /add %}\
+{% /if %}\
+
+Perfectly fine.
+```
+
+The previous example would compile to the following value, but changing the
+if-condition to `true` would cause an error.
+
+```txt
+Perfectly fine.
+```
+
+> <a id="for-loops"></a>Let's say I have some things. Let's also say I want to do the
+> same thing with all of my things. How do?
+
+Well&hellip; what kinds of things? Even though Arcana's variables are stringy
+nonsense, they are also listy. And it has a fixation on the filesystem. So there are
+definitely some types of things.
+
+> <a id="t-foreach"></a>How about those listy variables?
+
+```arct
+{% set x %}0{% /set %}\
+{% set x %}1{% /set %}\
+{% set x %}2{% /set %}\
+{% set x %}3{% /set %}\
+
+{% foreach i in x %}\
+    {{ i }}\
+{% /foreach %}
+```
+
+This would compile to the following value.
+
+```txt
+0123
+```
+
+> <a id="t-forsplit"></a>Let's say I have one variable and I want to split the string
+> and iterate through the slices.
+
+```arct
+{% set list %}First, Second, Third, Fourth, Fifth{% /set %}\
+
+{% forsplit word in list on ", " as loop reversed %}\
+    {% if !loop.isfirst %}, {% /if %}{{ word }}\
+{% /forsplit %}
+```
+
+This would compile to the following value.
+
+```txt
+Fifth, Fourth, Third, Second, First
+```
+
+This example introduces a couple new concepts. The `as loop` portion of the tag
+assigns the [loop context](#loop-context) variables using the prefix `loop` (more on
+loop context later). The `reversed` keyword does exact what you would think&mdash;it
+reverses the items you are about to iterate over.
+
+> <a id="t-forfile"></a>What about files?
+
+Describing the usefulness of this is going to take an example that is a bit more
+complex. Let's say we are inside of a directory with the following structure.
+
+```txt
+./
+    function/
+        file.arct
+    page.arct
+    resources/
+        01.arct
+        02.arct
+        03.arct
+        04.arct
+```
+
+And the file contents look like this.
+
+```arct
+{# ./function/file.arct #}\
+
+{% fn file(path) %}\
+    {% set content %}{% compile path /%}{% /set %}\
+    {% set name %}{% basename path /%}{% /set %}\
+    <h2>{{ name }}</h2>\
+    <pre>{{ content }}</pre>\
+{% /fn %}\
+```
+
+```arct
+{# ./page.arct #}\
+
+{% call "./function/file.arct" /%}\
+
+{% forfile file in "./resources" from 1 to 3 as loop %}\
+    {% set filepath %}{% path file /%}{% /set %}\
+
+    {# Add a newline after each subsequent item #}\
+    {% if !loop.isfirst %}
+\   {% /if %}\
+
+    {{ file(filepath) }}\
+{% /forfile %}
+```
+
+```arct
+{# ./resources/01.arct #}\
+
+First\
+```
+
+```arct
+{# ./resources/02.arct #}\
+
+Second\
+```
+
+```arct
+{# ./resources/03.arct #}\
+
+Third\
+```
+
+```arct
+{# ./resources/04.arct #}\
+
+Fourth\
+```
+
+Compiling `./page.arct` would result in the following value.
+
+```html
+<h2>02.arct</h2><pre>Second</pre>
+<h2>03.arct</h2><pre>Third</pre>
+```
+
+This example exposes another piece of loop functionality, the `from` and `to`
+keywords. These define the item to on which to start and the item on which to
+end, respectively. These keywords are also supported by each loop type.
+
+> <a id="t-fordir"></a>And directories?
+
+Let's say we are inside of a directory with the following structure.
+
+```txt
+./
+    function/
+        person.arct
+    page.arct
+    people/
+        01/
+            age.txt
+            name.txt
+        02/
+            age.txt
+            name.txt
+```
+
+And the file contents look like this.
+
+```arct
+{# function/person.arct #}\
+
+{% fn get_person_name_path(person_dir) %}\
+    {% path "name.txt" in person_dir /%}\
+{% /fn %}\
+
+{% fn get_person_name(person_dir) %}\
+    {% set person_name_path %}{{ get_person_name_path(person_dir) }}{% /set %}\
+    {% include person_name_path /%}\
+{% /fn %}\
+
+{% fn get_person_age_path(person_dir) %}\
+    {% path "age.txt" in person_dir /%}\
+{% /fn %}\
+
+{% fn get_person_age(person_dir) %}\
+    {% set person_age_path %}{{ get_person_age_path(person_dir) }}{% /set %}\
+    {% include person_age_path /%}\
+{% /fn %}\
+```
+
+```arct
+{# page.arct #}\
+
+{% call "./function/person.arct" /%}\
+
+{% fordir person_dir in "./people" as loop %}\
+    {% set person_dir_path %}{% path person_dir /%}{% /set %}\
+
+    {% set name %}{{ get_person_name(person_dir_path) }}{% /set %}\
+    {% set age %}{{ get_person_age(person_dir_path) }}{% /set %}\
+
+    {# Assert age is a number #}\
+    {% set ignore %}{% add age %}0{% /add %}{% /set %}\
+
+    {% assert age >= 0 /%}\
+
+    {% if !loop.isfirst %}
+\   {% /if %}\
+
+    <p>{{ name }} is {{ age }} year{% if age > 1 || age < 1 %}s{% /if %} old.</p>\
+{% /fordir %}
+```
+
+`people/01/name.txt`
+
+```txt
+Fred
+```
+
+`people/01/age.txt`
+
+```txt
+33
+```
+
+`people/02/name.txt`
+
+```txt
+Mark
+```
+
+`people/02/age.txt`
+
+```txt
+35
+```
+
+Compiling `page.arct` would result in the following value.
+
+```html
+<p>Fred is 33 years old.</p>
+<p>Mark is 35 years old.</p>
+```
+
+> <a id="loop-context"></a>You mentioned something about "loop context?"
+
+When a loop defines a loop prefix using the `as` keyword, multiple variables are set
+that help define the current state of the loop. Let's assume that the prefix defined
+is `loop`.
+
+1. `loop.index`: The current 0-based index of the iteration.
+2. `loop.size`: The length of the items being iterated over.
+3. `loop.isfirst`: Whether or not the loop is on the first iteration.
+4. `loop.islast`: Whether or not the loop is on the last iteration.
+
+# <a id="glossary"></a>Glossary
+
+<a id="g-content">**Content**</a>: Valid Arcana syntax that can be compiled.
+
+<a id="g-context">**Context**</a>: Functions and values currently accessible by name.
+
+<a id="g-function">**Function**</a>: Content in context that will be compiled by a
+sealed compiler when called.
+
+<a id="g-sealed"></a>**Sealed**: A compiler whose context will be tossed-out with the
+compiler once it is complete. The content within an `fn` tag is handled by a "sealed"
+compiler.
+
+```arct
+{% fn this %}\
+	{% set that %}That{% /set %}\
+	This\
+{% /fn %}\
+
+{{ this() }}, {{ that }}.
+```
+
+```txt
+This, .
+```
+
+<a id="g-unsealed"></a>**Unsealed**: A compiler whose context will be spilled when
+the compiler is tossed-out once it is completed. The content within a `set` tag is
+handled by an "unsealed" compiler.
+
+```arct
+{% set this %}\
+	{% set that %}That{% /set %}\
+	This\
+{% /set %}\
+
+{{ this }}, {{ that }}.
+```
+
+```txt
+This, That.
+```
+
+<a id="g-value"></a>**Value**: Data that is either literal or output by a compiler.
+The first addend passed to an `add` tag is a "value".
+
+```arct
+{% add 1 %}41{% /add %}
+```
+
+<a id="g-variable">**Variable**</a>: A value in context.

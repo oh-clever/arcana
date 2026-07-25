@@ -1,2 +1,0 @@
-{% assert params.message /%}\
-<p>{{ params.message }}</p>\

@@ -1850,6 +1850,8 @@ where
                 .filter(|direntry| direntry.is_file())
                 .collect::<Vec<PathBuf>>();
 
+            filepaths.sort_unstable_by(|a, b| a.file_name().cmp(&b.file_name()));
+
             if from_idx.is_some() || to_idx.is_some() {
                 let min = from_idx.unwrap_or(0_i64);
                 let max = to_idx.unwrap_or(filepaths.len() as i64);
@@ -1861,8 +1863,6 @@ where
                     .map(|(_, v)| v)
                     .collect::<Vec<PathBuf>>();
             }
-
-            filepaths.sort_unstable_by(|a, b| a.file_name().cmp(&b.file_name()));
 
             let (content, end_position) = self.parse_bypassed(ParseUntil::EndForfile)
                 .into_step()?;
