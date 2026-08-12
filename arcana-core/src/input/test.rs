@@ -60,3 +60,22 @@ fn read_str_1() {
     assert_eq!(None, input.current());
     assert!(input.is_end());
 }
+
+#[test]
+fn read_str_utf8_1() {
+    let mut input = "ń—“‘".try_into_input().unwrap();
+    assert_eq!(Some(&'ń'), input.current());
+
+    input.step().unwrap();
+    assert_eq!(Some(&'—'), input.current());
+
+    input.step().unwrap();
+    assert_eq!(Some(&'“'), input.current());
+
+    input.step().unwrap();
+    assert_eq!(Some(&'‘'), input.current());
+
+    input.step().unwrap();
+    assert_eq!(None, input.current());
+    assert!(input.is_end());
+}

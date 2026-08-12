@@ -300,6 +300,15 @@ mod test {
     }
 
     #[test]
+    fn parse_utf8_text_1() {
+        let mut output = Vec::new();
+        let mut parser = str_parser("\"ń—“‘\" ", &mut output);
+        let string = parser.parse_text("test").unwrap();
+        assert_eq!("ń—“‘", string);
+        assert_eq!(Some(&' '), parser.input.as_ref().and_then(|i| i.current()));
+    }
+
+    #[test]
     fn parse_text_as_path() {
         let mut output = Vec::new();
         let mut parser = str_parser("\"../file.txt\" ", &mut output);

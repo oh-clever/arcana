@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod test;
+
 use {
     crate::error::{
         IntoInternal,
@@ -37,7 +40,12 @@ where
     }
 
     pub(crate) fn write_char(&mut self, c: char) {
-        self.buffer.push(c as u8);
+        let mut character_buffer = [0x00, 0x00, 0x00, 0x00];
+        c.encode_utf8(&mut character_buffer);
+
+        for i in 0..c.len_utf8() {
+            self.buffer.push(character_buffer[i]);
+        }
     }
 
     pub(crate) fn write_str(&mut self, s: &str) {

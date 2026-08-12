@@ -2071,3 +2071,59 @@ fn parse_basename_1() {
 	let output_str = String::from_utf8(output).unwrap();
 	assert_eq!("page.arct", output_str);
 }
+
+#[test]
+fn parse_utf8_1() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_utf8_1/input.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!(include_str!("../../../resources/parse_utf8_1/output.txt"), output_str);
+}
+
+#[test]
+fn parse_utf8_2() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_utf8_2/input.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!(include_str!("../../../resources/parse_utf8_2/output.txt"), output_str);
+}
+
+#[test]
+fn parse_utf8_3() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_utf8_3/input.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!(include_str!("../../../resources/parse_utf8_3/output.txt"), output_str);
+}
+
+#[test]
+fn parse_utf8_4() {
+	let mut output = Vec::<u8>::new();
+	let mut parser = TemplateParser::new(
+		Context::default(),
+		PathBuf::from("./resources/parse_utf8_4/input.arct"),
+		&mut output,
+	).unwrap();
+	parser.parse().unwrap();
+    drop(parser);
+	let output_str = String::from_utf8(output).unwrap();
+	assert_eq!(include_str!("../../../resources/parse_utf8_4/output.txt"), output_str);
+}
